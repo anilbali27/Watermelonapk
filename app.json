@@ -4,27 +4,33 @@
     "slug": "watermelon",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/watermelon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/images/watermelon_splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1F9CEF"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.baryonsdev.watermelon"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/watermelon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.baryonsdev.watermelon"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
-    }
+      "favicon": "./assets/images/watermelon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "beef9560-ff27-4027-80b1-c7ca2f6aeea5"
+      }
+    },
+    "owner": "baryonsdev"
   }
 }
