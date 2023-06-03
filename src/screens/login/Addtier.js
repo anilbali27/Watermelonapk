@@ -30,6 +30,8 @@ import AllTiersCard from "./AllTiersCard";
 import WhiteLeftArrow from "../../../assets/images/dashboard/white_left_arrow";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import styles from "../../../assets/css/styles";
+import DropDownIcon from "../../../assets/images/dashboard/dropdown";
+
 //import SvgUri from "react-native-svg-uri-updated";
 import GlobalStyles from "../../../assets/css/styles";
 import api from "../../screens/Services/API/CallingApi";
@@ -46,20 +48,24 @@ export default function Addtier({ navigation }) {
   } = useForm();
 
   const [tierName, setTierName] = useState("");
-  const [amountType, setamountType] = useState("");
-  const [value1, setValue1] = useState("");
+ const [value1, setValue1] = useState("");
   const [tierError, setTierError] = useState("");
-
+  const [amountTypekey, setamountTypekey] = useState(0);
+ const [amountType, setamountType] = useState("Select");
   //Success Pop up
   const refRBSheet = useRef();
   const refRBSheet1 = useRef();
 
   const resetForm = () => {
-    console.log("Reset Form");
     setamountType("");
     setTierName(" ");
     setValue1(" ");
   };
+  const AmountTypeData = [
+   
+    { key: 1, label: "Increase", value: 1 },
+    { key: 2, label: "Decrease", value: 2 },
+  ];
 
   const onSubmit = async () => {
     const jsonValue = await AsyncStorage.getItem("UserToken");
@@ -75,9 +81,9 @@ export default function Addtier({ navigation }) {
       status: "",
     };
     const result = await api.createtier(token, endPoint.create_tier, myJson);
+    console.log(result.data,"Add tier")
     if (result.success === "1") {
       refRBSheet.current.open();
-      console.log(result, "SUB CATALOGUE ADDED");
       resetForm();
     } else {
       setTierError(result.message);
@@ -86,7 +92,8 @@ export default function Addtier({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={[styles.width100, styles.flex1]}>
+    <View style={[styles.width100, styles.flex1]}>
+      {/* <SafeAreaView style={[styles.width100, styles.flex1]}> */}
       <ScrollView style={[styles.grayBg, styles.width100]}>
         <View
           style={[
@@ -116,7 +123,7 @@ export default function Addtier({ navigation }) {
         </View>
 
         <View style={[styles.ph18, styles.mb18, styles.width100]}>
-          <View style={styles.inputView}>
+          <View style={styles.mb24}>
             <Text
               style={[
                 styles.textDefault,
@@ -139,6 +146,8 @@ export default function Addtier({ navigation }) {
                       styles.inputStyle,
                       styles.borderRadius0,
                       styles.borderDefault,
+                      styles.height39,
+                      errors && errors.tierName && styles.borderRed,
                     ]}
                     placeholderTextColor='#222B2E'
                     onChangeText={(tierName) => {
@@ -150,11 +159,73 @@ export default function Addtier({ navigation }) {
                 )}
               />
               {errors && errors.tierName && (
-                <Text style={[styles.errorMsg]}>Tier name is required.</Text>
+                <Text style={[styles.errorMsg]}>Tier Name is required.</Text>
               )}
             </View>
           </View>
-          <View style={styles.inputView}>
+          <View style={[styles.width100, styles.padR7]}>
+          <Text
+              style={[
+                styles.textDefault,
+                styles.font12,
+                styles.fontMed,
+                styles.marBtm4,
+              ]}>
+                     Select Amount Type{" "}
+                    <Text style={[styles.font12, styles.textPri1]}>*</Text>
+                  </Text>
+                  <View>
+                   
+                    <DropDownIcon style={[styles.modalDropDown]} />
+                    <Controller
+                      name='amountType'
+                      control={control}
+                      rules={{ required: "Amount type is required." }}
+                      render={(props) => (
+                        <ModalSelector
+                          data={AmountTypeData}
+                          initValue={amountType}
+                          selectStyle={[
+                            styles.inputStyle,
+                            styles.flexRow,
+                            styles.alignCenter,
+                            styles.justifyStart,
+                            styles.marBtm4,
+                            styles.borderDefault,
+                            errors && errors.amountType && styles.borderRed,
+                          ]}
+                          initValueTextStyle={[
+                            styles.font15,
+                            styles.textBlack,
+                            styles.fontMed,
+                          ]}
+                          overlayStyle={[
+                            styles.popupOverlay,
+                            styles.flexColumn,
+                            styles.justifyEnd,
+                            styles.alignCenter,
+                          ]}
+                          optionContainerStyle={[styles.width300px]}
+                          cancelStyle={[styles.width300px, styles.marHorauto]}
+                          optionTextStyle={[styles.textBlack, styles.font15]}
+                          cancelTextStyle={[styles.textBlack, styles.font15]}
+                          onChange={(option) => {
+                            if (option.key) {
+                              setamountType(option.label);
+                              setamountTypekey(option.value);
+                              props.field.onChange(option.value);
+                            }
+                          }}
+                          value={amountType}
+                        />
+                      )}
+                    />
+                  </View>
+                  {errors && errors.amountType && (
+                <Text style={[styles.errorMsg]}>Amount type is required.</Text>
+              )}
+                </View>
+          {/* <View style={styles.mb24}>
             <Text
               style={[
                 styles.textDefault,
@@ -179,6 +250,8 @@ export default function Addtier({ navigation }) {
                       styles.inputStyle,
                       styles.borderRadius0,
                       styles.borderDefault,
+                      styles.height39,
+                      errors && errors.amountType && styles.borderRed,
                     ]}
                     placeholderTextColor='#222B2E'
                     onChangeText={(amountType) => {
@@ -193,8 +266,8 @@ export default function Addtier({ navigation }) {
                 <Text style={[styles.errorMsg]}>Amount type is required.</Text>
               )}
             </View>
-          </View>
-          <View style={styles.inputView}>
+          </View> */}
+          <View style={styles.mb24}>
             <Text
               style={[
                 styles.textDefault,
@@ -202,7 +275,7 @@ export default function Addtier({ navigation }) {
                 styles.fontMed,
                 styles.marBtm4,
               ]}>
-              Value(%)
+              Value(%) <Text style={[styles.textred, styles.font13]}>*</Text>
             </Text>
             <View>
               <Controller
@@ -217,6 +290,8 @@ export default function Addtier({ navigation }) {
                       styles.inputStyle,
                       styles.borderRadius0,
                       styles.borderDefault,
+                      styles.height39,
+                      errors && errors.value1 && styles.borderRed,
                     ]}
                     keyboardType='numeric'
                     placeholderTextColor='#222B2E'
@@ -314,7 +389,7 @@ export default function Addtier({ navigation }) {
               styles.mb11,
               styles.fontBold,
             ]}>
-            Added Successfuly
+            Added Successfully
           </Text>
           <Text
             style={[
@@ -336,9 +411,7 @@ export default function Addtier({ navigation }) {
               onPress={() => navigation.goBack()}>
               <Text
                 style={[styles.font16, styles.textWhite, styles.letspa35]}
-                // onPress={() => {
-                //   navigation.navigate("Catelogue", { category: "tier" });
-                // }}
+                
                 onPress={() => navigation.goBack()}>
                 Continue
               </Text>
@@ -412,6 +485,6 @@ export default function Addtier({ navigation }) {
         </View>
         {/* error Popup Ends */}
       </RBSheet>
-    </SafeAreaView>
+    </View>
   );
 }

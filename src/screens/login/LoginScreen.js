@@ -1,5 +1,7 @@
 /** @format */
 
+/** @format */
+
 import React, { useState, useRef } from "react";
 import {
   Alert,
@@ -23,6 +25,8 @@ import * as Urls from "../../constant/Urls";
 import RBSheet from "react-native-raw-bottom-sheet";
 import EyeIcon1 from "../../../assets/jsx/eyeIcon";
 import SplashIcon from "../../../assets/images/dashboard/splash_icon";
+import Constants from "expo-constants";
+
 const EMAIL_REGEX =
   /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]/;
 
@@ -37,6 +41,7 @@ const LoginScreen = ({ navigation }) => {
     setValue,
   } = useForm();
   const refRBSheet1 = useRef();
+  const version = Constants?.manifest?.version;
 
   const [email, setEmail] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -78,7 +83,7 @@ const LoginScreen = ({ navigation }) => {
       email: email,
       password: password,
     };
-    console.log(myJson, "loginmyjson");
+    // console.log(myJson, "loginmyjson");
     storeData(myJson);
     const result = await api.Login(endPoint.Login, myJson);
 
@@ -90,56 +95,47 @@ const LoginScreen = ({ navigation }) => {
         "userTypeId",
         result.data.user_type_id || "null"
       );
-
-      console.log(result.data.token, "LOGIN RESPONSE");
+       await AsyncStorage.setItem("usertype", result.data.user_type.toString());
+      
+      console.log(result.data.user_type, "LOGIN RESPONSE");
+     
       await AsyncStorage.setItem(
-        "userType",
-        JSON.stringify(result.data.user_type) || "null"
+        "tierapproval",
+        result.data.tier_approval || "null"
       );
-      // await AsyncStorage.setItem("tierapproval", result.data.tier_approval);
-      // await AsyncStorage.setItem(
-      //   "registration_no",
-      //   result.data.company.registration_no || "null"
-      // );
-      // await AsyncStorage.setItem(
-      //   "mobileCode",
-      //   result.data?.mobile_no_code || "null"
-      // );
-      // await AsyncStorage.setItem(
-      //   "mobileNumber",
-      //   result.data?.phone_number || "null"
-      // );
-      // await AsyncStorage.setItem("email", result.data?.email || "null");
-      // await AsyncStorage.setItem(
-      //   "companyName",
-      //   result.data?.company.name || "null"
-      // );
-      // await AsyncStorage.setItem("address", result.data?.address || "null");
-      // await AsyncStorage.setItem("city", result.data?.city || "null");
-      // await AsyncStorage.setItem(
-      //   "updatedBy",
-      //   result.data?.updated_by || "null"
-      // );
-      // await AsyncStorage.setItem(
-      //   "updatedAt",
-      //   result.data?.updated_at || "null"
-      // );
-      // await AsyncStorage.setItem("firstname", result.data?.firstname || "null");
-      // await AsyncStorage.setItem("lastname", result.data?.lastname || "null");
-
-      // console.log(result.data.token, "Tokennn");
-      // console.log(result.data.user_type_id, "result.data.user_type_id");
-
-      // await AsyncStorage.setItem('UserLogId', result.data.userId)
-      // await AsyncStorage.setItem('email', result.data.email)
-      // await AsyncStorage.setItem('userName', result.data.userName)
-      // await AsyncStorage.setItem('loginpassword', result.data?.password)
-      // await AsyncStorage.setItem('loginStatus', '1')
-      // setUserinvalidemail(false)
-      // console.log(result.data, "resJson.data");
-      //  signIn(result.data.email);
-      //  signIn(result.data.firstname);
-      //  signIn(result.data.token)
+      await AsyncStorage.setItem(
+        "registration_no",
+        result.data.company.registration_no || "null"
+      );
+      await AsyncStorage.setItem(
+        "mobileCode",
+        result.data?.mobile_no_code || "null"
+      );
+      await AsyncStorage.setItem(
+        "mobileNumber",
+        result.data?.phone_number || "null"
+      );
+      await AsyncStorage.setItem("email", result.data?.email || "null");
+      await AsyncStorage.setItem(
+        "companyName",
+        result.data?.company.name || "null"
+      );
+      await AsyncStorage.setItem("address", result.data?.address || "null");
+      await AsyncStorage.setItem("city", result.data?.city || "null");
+      await AsyncStorage.setItem(
+        "updatedBy",
+        result.data?.updated_by || "null"
+      );
+      await AsyncStorage.setItem(
+        "updatedAt",
+        result.data?.updated_at || "null"
+      );
+      await AsyncStorage.setItem("firstname", result.data?.firstname || "null");
+      await AsyncStorage.setItem("lastname", result.data?.lastname || "null");
+      await AsyncStorage.setItem(
+        "registrationNumber",
+        result.data?.company?.registration_no || "null"
+      );
 
       navigation.navigate("DrawerNavigationRoutes");
     } else {
@@ -162,7 +158,6 @@ const LoginScreen = ({ navigation }) => {
 
   const gotToSignup = () => {
     navigation.navigate("SignupScreen");
-    //console.log(navigation)
   };
   const goToForgotpassword = () => {
     navigation.navigate("ForgotPassword");
@@ -176,7 +171,7 @@ const LoginScreen = ({ navigation }) => {
 
         <View style={[GlobalStyles.container, GlobalStyles.width100]}>
           <Text style={GlobalStyles.titleStyle}>Login</Text>
-          <Text style={GlobalStyles.paragraphStyle}>
+          <Text style={[GlobalStyles.paragraphStyle, GlobalStyles.pt6]}>
             Please enter the details below to continue
           </Text>
 
@@ -187,7 +182,7 @@ const LoginScreen = ({ navigation }) => {
                 GlobalStyles.marBtm4,
                 GlobalStyles.textDefault,
               ]}>
-              Email or Mobile No
+              Email
             </Text>
 
             <View>
@@ -203,7 +198,10 @@ const LoginScreen = ({ navigation }) => {
                 }}
                 render={(props) => (
                   <TextInput
-                    style={[styles.inputStyle]}
+                    style={[
+                      styles.inputStyle,
+                      errors && errors.email && styles.borderRed,
+                    ]}
                     placeholder='Email'
                     placeholderTextColor='#222B2E'
                     onChangeText={(email) => {
@@ -234,7 +232,11 @@ const LoginScreen = ({ navigation }) => {
                 rules={{ required: "Password is required." }}
                 render={(props) => (
                   <TextInput
-                    style={[styles.inputStyle]}
+                    style={[
+                      styles.inputStyle,
+                      styles.padR50,
+                      errors && errors.password && styles.borderRed,
+                    ]}
                     placeholder='Password'
                     placeholderTextColor='#222B2E'
                     secureTextEntry={passwordVisibility}
@@ -309,7 +311,7 @@ const LoginScreen = ({ navigation }) => {
         </TouchableOpacity>
 
         <View>
-          <Text style={GlobalStyles.labelSignin}>Or sign in with</Text>
+          {/* <Text style={GlobalStyles.labelSignin}>Or sign in with</Text>
 
           <View style={GlobalStyles.imageIcon}>
             <View style={GlobalStyles.imageBox}>
@@ -324,13 +326,24 @@ const LoginScreen = ({ navigation }) => {
                 style={GlobalStyles.logoIcon}
               />
             </View>
-          </View>
+          </View> */}
           <View style={GlobalStyles.newSignup}>
             <Text style={GlobalStyles.account}>Don't have an account? </Text>
             <TouchableOpacity onPress={() => gotToSignup()}>
               <Text style={GlobalStyles.new_sign}>Sign Up</Text>
             </TouchableOpacity>
           </View>
+        </View>
+        <View style={[GlobalStyles.flexRow, GlobalStyles.justifyCenter]}>
+          <Text
+            style={[
+              GlobalStyles.font12,
+              GlobalStyles.alignCenter,
+              GlobalStyles.textBlack,
+              GlobalStyles.padtop30,
+            ]}>
+            Version {version}
+          </Text>
         </View>
       </View>
       <RBSheet
@@ -382,15 +395,14 @@ const LoginScreen = ({ navigation }) => {
           </Text>
           <View style={[styles.flexRow, styles.justifyCenter]}>
             <TouchableOpacity
+              onPress={() => refRBSheet1.current.close()}
               style={[
                 styles.continueBtn,
                 styles.width50,
                 styles.flexRow,
                 styles.justifyCenter,
               ]}>
-              <Text
-                style={[styles.font16, styles.textWhite, styles.letspa35]}
-                onPress={() => navigation.goBack()}>
+              <Text style={[styles.font16, styles.textWhite, styles.letspa35]}>
                 Go Back
               </Text>
             </TouchableOpacity>

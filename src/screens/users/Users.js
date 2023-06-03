@@ -1,7 +1,5 @@
 /** @format */
 
-/** @format */
-
 import React, { useState, useRef, useEffect } from "react";
 import {
   Alert,
@@ -32,12 +30,14 @@ import Bell from "../../../assets/images/icons/Bell";
 import api from "../Services/API/CallingApi";
 import { endPoint } from "../Services/API/ApiConstants";
 import UsersCard from "./UsersCard";
+import { useIsFocused } from "@react-navigation/native";
 
 const UsersScreen = ({ navigation }) => {
   const [usersList, setUsersList] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const isFocused = useIsFocused();
 
   const [filterdData, setfilterData] = useState([]);
   const [masterData, setmasterData] = useState([]);
@@ -117,12 +117,14 @@ const UsersScreen = ({ navigation }) => {
   // -------------------------------- Get All User List API Calling ----------------------------------------------------
   useEffect(() => {
     getAllUserList();
-  }, []);
+  }, [isFocused]);
+
   const getAllUserList = async () => {
     console.log("Page:::", page);
     setIsLoading(true);
     let supplierId = await AsyncStorage.getItem("userTypeId");
     let userType = await AsyncStorage.getItem("userType");
+    console.log(userType, "222");
     let token = await AsyncStorage.getItem("UserToken");
     // let token =
     //   "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvc3RhZ2luZ2FwaS53YXRlcm1lbG9uLm1hcmtldFwvaW5kZXgucGhwXC9hcGlcL3YxXC9sb2dpbiIsImlhdCI6MTY4MTM3MTIyMSwiZXhwIjoxNzEyOTA3MjIxLCJuYmYiOjE2ODEzNzEyMjEsImp0aSI6Im9aeWpua2FFN0hTU1lwS1oiLCJzdWIiOiI2MDc4NGRhNzdiNjBiNzYwNWE0N2E0MWUiLCJwcnYiOiI4N2UwYWYxZWY5ZmQxNTgxMmZkZWM5NzE1M2ExNGUwYjA0NzU0NmFhIn0.Xb3JDRswdPXgJORSa-CLZgV9vIOo4huAw4quQ0Ch55Y";
@@ -130,8 +132,13 @@ const UsersScreen = ({ navigation }) => {
     let myJson = {
       // user_type_id: supplierId,
       // user_type: parseInt(userType),
+      // user_type_id: supplierId,
+      user_type: 2,
+      // user_type_id: "64476daa20d63f006b00b854",
       user_type_id: supplierId,
-      user_type: parseInt(userType),
+      // user_type: parseInt(userType),
+      // user_type: userType,
+
       // page: page,
     };
     console.log("myJsonUser:::", myJson);
@@ -191,13 +198,13 @@ const UsersScreen = ({ navigation }) => {
       <View style={GlobalStyles.orderContainer}>
         <View style={GlobalStyles.promotionsHeaderContainer}>
           <View style={GlobalStyles.PromotionScreenIconView}>
-            <Pressable
+            <TouchableOpacity
               onPress={() => {
                 //   navigation.navigate("DrawerNavigationRoutes");
                 navigation.goBack();
               }}>
               <BackArrow />
-            </Pressable>
+            </TouchableOpacity>
             <Text style={GlobalStyles.promotionsHeaderText}>Users</Text>
           </View>
         </View>
@@ -264,14 +271,3 @@ const UsersScreen = ({ navigation }) => {
 };
 
 export default UsersScreen;
-
-// import React from "react";
-// import { View, Text } from "react-native";
-
-// export default function UsersScreen({ navigation }) {
-//   return (
-//     <View>
-//       <Text>UsersScreen</Text>
-//     </View>
-//   );
-// }

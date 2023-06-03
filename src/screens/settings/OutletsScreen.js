@@ -38,12 +38,18 @@ const OutletsScreen = ({ navigation }) => {
 
   const handleSubmit = async (data) => {
     const jsonValue = await AsyncStorage.getItem("UserToken");
+    const id = await AsyncStorage.getItem("userTypeId");
+
     console.log(jsonValue, "ttttttttttttttttttttttt");
-    let token =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvc3RhZ2luZ2FwaS53YXRlcm1lbG9uLm1hcmtldFwvaW5kZXgucGhwXC9hcGlcL3YxXC9sb2dpbiIsImlhdCI6MTY4MzUyNzAyMSwiZXhwIjoxNzE1MDYzMDIxLCJuYmYiOjE2ODM1MjcwMjEsImp0aSI6IncwWEdXc3ZGT1NkZm1rbW0iLCJzdWIiOiI2NDQ3NmRhYjIwZDYzZjAwNmIwMGI4NTYiLCJwcnYiOiI4N2UwYWYxZWY5ZmQxNTgxMmZkZWM5NzE1M2ExNGUwYjA0NzU0NmFhIn0.0VE-p6o9CAcgACW4bEx3-6nokHyqTpus3mP0MiWUhlI";
+    let token = jsonValue;
+    // let token =
+    //   "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvc3RhZ2luZ2FwaS53YXRlcm1lbG9uLm1hcmtldFwvaW5kZXgucGhwXC9hcGlcL3YxXC9sb2dpbiIsImlhdCI6MTY4MzUyNzAyMSwiZXhwIjoxNzE1MDYzMDIxLCJuYmYiOjE2ODM1MjcwMjEsImp0aSI6IncwWEdXc3ZGT1NkZm1rbW0iLCJzdWIiOiI2NDQ3NmRhYjIwZDYzZjAwNmIwMGI4NTYiLCJwcnYiOiI4N2UwYWYxZWY5ZmQxNTgxMmZkZWM5NzE1M2ExNGUwYjA0NzU0NmFhIn0.0VE-p6o9CAcgACW4bEx3-6nokHyqTpus3mP0MiWUhlI";
     var myJson = {
       page: pagee,
+     
+     supplier_id: id
     };
+    
     const result = await api.getOutletsList(
       token,
       endPoint.outlets_List,

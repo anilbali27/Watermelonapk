@@ -568,7 +568,6 @@ const DetailedInvoicePage = ({ route, navigation }) => {
     var myJson = {
       invoice_id: Data._id,
     };
-    console.log(myJson, "accesstoken");
 
     const result = await api.getInvoiceDetails(
       accesstoken,
@@ -576,8 +575,6 @@ const DetailedInvoicePage = ({ route, navigation }) => {
       myJson
     );
     if (result.success) {
-      console.log(result.data.invoice, "myJsondatar");
-      console.log(result.data.invoice.link, "mylink");
       setinvoicedata(result.data?.invoice);
     } else {
       setinvoicedata([]);
@@ -586,7 +583,7 @@ const DetailedInvoicePage = ({ route, navigation }) => {
 
   return (
     <ScrollView>
-      <SafeAreaView style={GlobalStyles.orderContainer}>
+      <View style={GlobalStyles.orderContainer}>
         {/* <StatusBar animated={true} backgroundColor='#1F9CEF' /> */}
         <View style={GlobalStyles.headerDetailOrderView}>
           <Pressable
@@ -1011,7 +1008,7 @@ const DetailedInvoicePage = ({ route, navigation }) => {
             </View>
           </Pressable>
         </View>
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 };

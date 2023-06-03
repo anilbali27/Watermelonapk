@@ -83,7 +83,7 @@ const NotificationScreen = ({ navigation }) => {
             textDecorationLine: "underline",
             lineHeight: 20,
           },
-          tabBarIndicatorStyle: { borderRadius: 0, backgroundColor: "none" },
+          tabBarIndicatorStyle: { borderRadius: 0, backgroundColor: "#1F9CEF" },
           tabBarActiveTintColor: "#FFF",
           //tabBarButton: (props) => <TouchableOpacity {...props} onPress={() => console.log('wa')}><Text>Touch</Text></TouchableOpacity>,
         }}

@@ -21,6 +21,7 @@ import {
   TextInput,
   Animated,
 } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Appbar, Searchbar } from "react-native-paper";
@@ -57,6 +58,7 @@ import styles from "../../../assets/css/styles";
 const MyorderScreen = ({ navigation }) => {
   const refRBSheet = useRef();
   const refRBSheet1 = useRef();
+  const isFocused = useIsFocused();
 
   const height = React.useRef(null);
 
@@ -193,9 +195,7 @@ const MyorderScreen = ({ navigation }) => {
             ? item.supplier_info?.supplier_name.toUpperCase() + " - "
             : "") +
           (item.outlet_info?.name ? item.outlet_info?.name.toUpperCase() : "") +
-          (item.paid_status_name
-            ? " - " + item.paid_status_name.toUpperCase()
-            : "");
+          (item.status_name ? " - " + item.status_name.toUpperCase() : "");
 
         const textData1 = selectedItem || "";
         const textData2 = selectedOutlet || "";
@@ -319,18 +319,20 @@ const MyorderScreen = ({ navigation }) => {
   useEffect(() => {
     handleSubmit();
     getFiltersBy();
-  }, []);
+  }, [isFocused]);
   const getFiltersBy = async () => {
     const jsonValue = await AsyncStorage.getItem("UserToken");
+
     const id = await AsyncStorage.getItem("userTypeId");
     let token = jsonValue;
+    console.log(token, "1123");
     var myJson = {
-      user_type_id: "60784da77b60b7605a47a41c",
+      // user_type_id: "60784da77b60b7605a47a41c",
+      user_type_id: id,
     };
     const result1 = await api.getFilter(token, endPoint.filterby_order, myJson);
 
     if (result1) {
-      console.log(result1.data, "FILTERBYOFFER");
       setOrderData(result1.data);
       setBuyersData(result1.data.buyers);
       setOutletsData(result1.data.outlets);
@@ -356,12 +358,17 @@ const MyorderScreen = ({ navigation }) => {
   // });
 
   const handleSubmit = async () => {
+    console.log("on select pressabl");
     setIsLoading(true);
     const jsonValue = await AsyncStorage.getItem("UserToken");
     let token = jsonValue;
+    let supplierId = await AsyncStorage.getItem("userTypeId");
+
     // let token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvc3RhZ2luZ2FwaS53YXRlcm1lbG9uLm1hcmtldFwvaW5kZXgucGhwXC9hcGlcL3YxXC9sb2dpbiIsImlhdCI6MTY4MTM3MTIyMSwiZXhwIjoxNzEyOTA3MjIxLCJuYmYiOjE2ODEzNzEyMjEsImp0aSI6Im9aeWpua2FFN0hTU1lwS1oiLCJzdWIiOiI2MDc4NGRhNzdiNjBiNzYwNWE0N2E0MWUiLCJwcnYiOiI4N2UwYWYxZWY5ZmQxNTgxMmZkZWM5NzE1M2ExNGUwYjA0NzU0NmFhIn0.Xb3JDRswdPXgJORSa-CLZgV9vIOo4huAw4quQ0Ch55Y";
     var myJson = {
-      page: "1",
+      supplier_id: supplierId,
+      page: "148",
+      platform: "mobile",
     };
     const result = await api.getorderslist(token, endPoint.Order_List, myJson);
     setMyList(result);
@@ -378,7 +385,10 @@ const MyorderScreen = ({ navigation }) => {
     // setfilterData(...filterdData, ...appendOrderlist)
     // setPage(page + 1);
     setIsLoading(false);
-    console.log("TotalOrders:::", filterdData);
+    console.log(
+      result.data?.orders[0]?.invoice_status?.invoice_number,
+      "987456"
+    );
   };
 
   const title = list?.supplier_info?.supplier_name;
@@ -436,9 +446,15 @@ const MyorderScreen = ({ navigation }) => {
       const newData = list.filter((item) => {
         const supplierName = item.supplier_info?.supplier?.name || "";
         const outletName = item.outlet_info?.name || "";
+        const statusname = item.status_name || "";
+        const paid_status = item.paid_status || "";
+        const Price = item.total_payable_amount;
         const itemData =
           supplierName.toUpperCase() +
           outletName.toUpperCase() +
+          statusname.toUpperCase() +
+          Price +
+          paid_status +
           item.outletName;
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
@@ -457,9 +473,15 @@ const MyorderScreen = ({ navigation }) => {
       const newData = withoutPending.filter((item) => {
         const supplierName = item.supplier_info?.supplier?.name || "";
         const outletName = item.outlet_info?.name || "";
+        const statusname = item.status_name || "";
+        const paid_status = item.paid_status || "";
+        const Price = item.total_payable_amount;
         const itemData =
           supplierName.toUpperCase() +
           outletName.toUpperCase() +
+          statusname.toUpperCase() +
+          Price +
+          paid_status +
           item.outletName;
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
@@ -624,8 +646,9 @@ const MyorderScreen = ({ navigation }) => {
                             moneyStatus: item?.paid_status,
                             items: item?.products_info.length,
                             productInfo: item?.products_info,
-                            invoice: item?.invoice_status.invoice_link,
+                            invoice: item?.invoice_status,
                             image: item?.products_info?.product_image,
+                            pdf: item?.pdf,
                           })
                         }>
                         <AllOrdersCard

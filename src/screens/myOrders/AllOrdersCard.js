@@ -13,7 +13,7 @@ import RBSheet from "react-native-raw-bottom-sheet";
 import api from "../../screens/Services/API/CallingApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { endPoint } from "../Services/API/ApiConstants";
-import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
+import { useState, useRef, forwardRef, useImperativeHandle } from "react";
 import styles from "../../../assets/css/styles";
 
 const AllOrdersCard = (props) => {
@@ -37,18 +37,25 @@ const AllOrdersCard = (props) => {
   const [deleteId, setdeleteId] = useState();
   const [productId, setProductId] = useState();
   const [productRangeId, setProductRangeId] = useState();
-  const [productInfo, setProductInfo] = useState([])
+  const [productInfo, setProductInfo] = useState([]);
   const productData = props?.products_info;
-  
+
   // setProductInfo(props?.products_info)
   //Delete Sub Catelogue
   const DeleteOrder = (id, product_id, product_range_id) => {
-    console.log("Deleteid::", id, "productId", product_id, "productrangeid", product_range_id)
+    console.log(
+      "Deleteid::",
+      id,
+      "productId",
+      product_id,
+      "productrangeid",
+      product_range_id
+    );
     refRBSheet.current.open();
     setdeleteId(id);
     setProductId(product_id);
     setProductRangeId(product_range_id);
-  }
+  };
   //Delete sub catelogue API Integration
   const DeleteOrderAPICall = async () => {
     refRBSheet.current.close();
@@ -56,14 +63,17 @@ const AllOrdersCard = (props) => {
     var myJson = {
       order_id: deleteId,
       product_id: productId,
-      price_range_id: productRangeId
-    }
-    console.log("myJsonOrder", myJson)
-    const result = await api.CreateMasterData(endPoint.delete_order, token, myJson);
+      price_range_id: productRangeId,
+    };
+    console.log("myJsonOrder", myJson);
+    const result = await api.CreateMasterData(
+      endPoint.delete_order,
+      token,
+      myJson
+    );
     console.log("deleteOrderresult::", result);
     props.updateData();
-
-  }
+  };
 
   return (
     <>
@@ -253,16 +263,22 @@ const AllOrdersCard = (props) => {
                   <View style={GlobalStyles.acticeView}>
                     <FontAwesome name='circle' size={5} color={COLORS.green} />
                   </View>
-                  <Text style={GlobalStyles.emailText}>{props.emailStatus}</Text>
+                  <Text style={GlobalStyles.emailText}>
+                    {props.emailStatus}
+                  </Text>
                   <View
                     style={[
                       GlobalStyles.changeFlexDirection,
                       GlobalStyles.orderActiveView,
                     ]}>
-                    <View style={GlobalStyles.acticeView}>
-                      <FontAwesome name='circle' size={5} color={COLORS.green} />
-                    </View>
-                    <Text style={GlobalStyles.emailText}>Order sent</Text>
+                    {/* <View style={GlobalStyles.acticeView}>
+                      <FontAwesome
+                        name='circle'
+                        size={5}
+                        color={COLORS.green}
+                      />
+                    </View> */}
+                    {/* <Text style={GlobalStyles.emailText}>Order sent</Text> */}
                   </View>
                 </View>
               </View>
@@ -274,14 +290,26 @@ const AllOrdersCard = (props) => {
                   </Text>
                 </View>
 
-                <View style={[GlobalStyles.justifyContentCenter, styles.mrg20]}>
-                  <Text style={GlobalStyles.getTimeText}>Get it by {date}</Text>
-                </View>
-                <View>
-                  <TouchableOpacity onPress={() => DeleteOrder(props?.id, props?.products_info[0]?.id, props?.products_info[0]?.price_range_id)}>
+                {/* <View
+                  style={[
+                    GlobalStyles.flexRow,
+                    GlobalStyles.justifyEnd,
+                    GlobalStyles.alignCenter,
+                  ]}>
+                  <Text style={[GlobalStyles.getTimeText, styles.mrg20]}>
+                    Get it by {date}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      DeleteOrder(
+                        props?.id,
+                        props?.products_info[0]?.id,
+                        props?.products_info[0]?.price_range_id
+                      )
+                    }>
                     <AntDesign name='delete' size={15} color={COLORS.red} />
                   </TouchableOpacity>
-                </View>
+                </View> */}
               </View>
             </View>
             {/* <View style={GlobalStyles.flexRow}>
@@ -314,22 +342,66 @@ const AllOrdersCard = (props) => {
             borderTopRightRadius: 24,
             paddingTop: 9,
             paddingHorizontal: 30,
-          }
+          },
         }}>
-        <View style={[styles.flexColumn, styles.alignCenter, styles.justifyCenter, styles.padt30]}>
-          <Image source={require('../../../assets/images/dashboard/delete_img.png')} style={[styles.successIcon]}></Image>
-          <Text style={[styles.font22, styles.textBlack, styles.textCenter, styles.mb11, styles.fontBold]}>Delete</Text>
-          <Text style={[styles.font15, styles.textBlack, styles.mb37, styles.textCenter]}>Are you sure want to delete?</Text>
-          <View style={[styles.flexRow, styles.justifyCenter, styles.space_btn]}>
+        <View
+          style={[
+            styles.flexColumn,
+            styles.alignCenter,
+            styles.justifyCenter,
+            styles.padt30,
+          ]}>
+          <Image
+            source={require("../../../assets/images/dashboard/delete_img.png")}
+            style={[styles.successIcon]}></Image>
+          <Text
+            style={[
+              styles.font22,
+              styles.textBlack,
+              styles.textCenter,
+              styles.mb11,
+              styles.fontBold,
+            ]}>
+            Delete
+          </Text>
+          <Text
+            style={[
+              styles.font15,
+              styles.textBlack,
+              styles.mb37,
+              styles.textCenter,
+            ]}>
+            Are you sure want to delete?
+          </Text>
+          <View
+            style={[styles.flexRow, styles.justifyCenter, styles.space_btn]}>
             <View style={[styles.width50, styles.PadR9]}>
-              <TouchableOpacity style={[styles.continueBtn, styles.flexRow, styles.justifyCenter, styles.cancelStyle]} onPress={() => refRBSheet.current.close()}>
-                <Text style={[styles.font16, styles.textPri, styles.letspa35]}>Cancel</Text>
+              <TouchableOpacity
+                style={[
+                  styles.continueBtn,
+                  styles.flexRow,
+                  styles.justifyCenter,
+                  styles.cancelStyle,
+                ]}
+                onPress={() => refRBSheet.current.close()}>
+                <Text style={[styles.font16, styles.textPri, styles.letspa35]}>
+                  Cancel
+                </Text>
               </TouchableOpacity>
             </View>
 
             <View style={[styles.width50, styles.PadL9]}>
-              <TouchableOpacity style={[styles.continueBtn, styles.flexRow, styles.justifyCenter]} onPress={() => DeleteOrderAPICall()}>
-                <Text style={[styles.font16, styles.textWhite, styles.letspa35]}>Yes, delete it</Text>
+              <TouchableOpacity
+                style={[
+                  styles.continueBtn,
+                  styles.flexRow,
+                  styles.justifyCenter,
+                ]}
+                onPress={() => DeleteOrderAPICall()}>
+                <Text
+                  style={[styles.font16, styles.textWhite, styles.letspa35]}>
+                  Yes, delete it
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

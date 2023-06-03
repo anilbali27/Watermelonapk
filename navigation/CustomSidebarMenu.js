@@ -1,6 +1,3 @@
-/** @format */
-
-/** @format */
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -24,12 +21,15 @@ import Review from "../assets/images/icons/sideBar/Review";
 import SupplierProfileIcon from "../assets/images/icons/sideBar/SupplierProfile";
 import { endPoint } from "../src/screens/Services/API/ApiConstants";
 import api from "../src/screens/Services/API/CallingApi";
+import { myVariable } from "../src/screens/splash/SplashScreen";
+import Constants from "expo-constants";
 
 const CustomSidebarMenu = (props) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [image, setImage] = useState("");
   const [profileDatta, setProfileDatta] = useState([]);
+  const version = Constants?.manifest?.version;
 
   useEffect(() => {
     getFirstName();
@@ -114,6 +114,9 @@ const CustomSidebarMenu = (props) => {
     if (stackName === "BuyersScreen") {
       props.navigation.navigate(stackName);
     }
+    if (stackName === "WareHouseList") {
+      props.navigation.navigate(stackName);
+    }
     if (stackName === "Catelogue") {
       props.navigation.navigate(stackName);
     } else {
@@ -147,7 +150,7 @@ const CustomSidebarMenu = (props) => {
           <DrawerItemList {...props} />
           <View style={{ marginTop: -30 }}>
             {/* <View style={stylesSidebar.profileHeaderLine} /> */}
-            <DrawerItem
+            {/* <DrawerItem
               icon={() => (
                 <Dashboard
                   size={18}
@@ -165,9 +168,9 @@ const CustomSidebarMenu = (props) => {
                 () => props.navigation.navigate("DashboardContentScreen")
                 // props.navigation.goBack()
               }
-            />
+            /> */}
 
-            <DrawerItem
+            {/* <DrawerItem
               icon={() => (
                 <CatalogueIcon
                   size={18}
@@ -182,6 +185,23 @@ const CustomSidebarMenu = (props) => {
                 <Text style={{ color: COLORS.loginTextInput }}>Catalogue</Text>
               )}
               onPress={() => goToStack("Catelogue")}
+            /> */}
+
+            <DrawerItem
+              icon={() => (
+                <Invoices
+                  size={18}
+                  style={{
+                    alignSelf: "center",
+                    marginLeft: 0,
+                    marginRight: -20,
+                  }}
+                />
+              )}
+              label={({ color }) => (
+                <Text style={{ color: COLORS.loginTextInput }}>Invoice</Text>
+              )}
+              onPress={() => goToStack("InvoiceScreen")}
             />
             <DrawerItem
               icon={() => (
@@ -198,22 +218,6 @@ const CustomSidebarMenu = (props) => {
                 <Text style={{ color: COLORS.loginTextInput }}>Inventory</Text>
               )}
               onPress={() => goToStack("InventoryScreen")}
-            />
-            <DrawerItem
-              icon={() => (
-                <Invoices
-                  size={18}
-                  style={{
-                    alignSelf: "center",
-                    marginLeft: 0,
-                    marginRight: -20,
-                  }}
-                />
-              )}
-              label={({ color }) => (
-                <Text style={{ color: COLORS.loginTextInput }}>Invoice</Text>
-              )}
-              onPress={() => goToStack("InvoiceScreen")}
             />
             <DrawerItem
               icon={() => (
@@ -250,7 +254,7 @@ const CustomSidebarMenu = (props) => {
               onPress={() => goToStack("BuyersScreen")}
             />
 
-            <DrawerItem
+            {/* <DrawerItem
               icon={() => (
                 <Payments
                   size={18}
@@ -265,7 +269,7 @@ const CustomSidebarMenu = (props) => {
                 <Text style={{ color: COLORS.loginTextInput }}>Payment</Text>
               )}
               onPress={() => goToStack("PaymentScreen")}
-            />
+            /> */}
 
             {/* <DrawerItem
               icon={() => (
@@ -315,6 +319,22 @@ const CustomSidebarMenu = (props) => {
                 <Text style={{ color: COLORS.loginTextInput }}>Users</Text>
               )}
               onPress={() => goToStack("Users")}
+            />
+            <DrawerItem
+              icon={() => (
+                <Myoffers
+                  size={18}
+                  style={{
+                    alignSelf: "center",
+                    marginLeft: 0,
+                    marginRight: -20,
+                  }}
+                />
+              )}
+              label={({ color }) => (
+                <Text style={{ color: COLORS.loginTextInput }}>WareHouse</Text>
+              )}
+              onPress={() => goToStack("WareHouseList")}
             />
 
             <View style={stylesSidebar.profileHeaderLine} />
@@ -405,6 +425,7 @@ const CustomSidebarMenu = (props) => {
                       text: "Confirm",
                       onPress: () => {
                         AsyncStorage.clear();
+                        // var myVariable = 0;
                         props.navigation.replace("LoginScreen");
                       },
                     },
@@ -415,6 +436,17 @@ const CustomSidebarMenu = (props) => {
             />
           </View>
         </DrawerContentScrollView>
+        <View style={[GlobalStyles.flexRow, GlobalStyles.justifyCenter]}>
+          <Text
+            style={[
+              GlobalStyles.font12,
+              GlobalStyles.alignCenter,
+              GlobalStyles.textBlack,
+              GlobalStyles.marginTopDrawerscreen,
+            ]}>
+            Version {version}
+          </Text>
+        </View>
       </ScrollView>
     </View>
   );

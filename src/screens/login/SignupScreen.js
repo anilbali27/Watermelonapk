@@ -1,5 +1,7 @@
 /** @format */
 
+/** @format */
+
 import React, {
   useState,
   useEffect,
@@ -7,6 +9,7 @@ import React, {
   useCallback,
   useRef,
 } from "react";
+import { Button } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
 import RBSheet from "react-native-raw-bottom-sheet";
 import DropDownIcon from "../../../assets/images/dashboard/dropdown";
@@ -21,11 +24,13 @@ import {
   Pressable,
   SafeAreaView,
   Image,
-  Button,
+  // Button,
 } from "react-native";
 import styles from "../../../assets/css/styles";
 import { getDocumentAsync } from "expo-document-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import DropDown from "../../../assets/images/icons/DropDown";
+import * as ImagePicker from "expo-image-picker";
 
 import api from "../Services/API/CallingApi";
 import { endPoint } from "../Services/API/ApiConstants";
@@ -57,6 +62,8 @@ export default function SignUp({ navigation }) {
   const [address, setAddress] = useState("");
   const [countryCode, setcountryCode] = useState("Select");
   const [countrykey, setcountrykey] = useState("Select");
+  const [countrycityList, setCountrycityList] = useState([]);
+  const [cityList, setCityList] = useState([]);
 
   const [number, setNumber] = useState("");
   const [conPassword, setConPassword] = useState("");
@@ -66,96 +73,203 @@ export default function SignUp({ navigation }) {
   const [errortext, setErrortext] = useState("");
   const [presentationFile, setPresentationFile] = useState({});
   const [presentationFile1, setPresentationFile1] = useState({});
+  const [presentationFile2, setPresentationFile2] = useState({});
+const[image,setImage]=useState('')
+const[image1,setImage1]=useState('')
+
   const [pressed, setPressed] = useState(false);
   const [pdfUri, setPdfUri] = useState(null);
+  const [cityKey, setCityKey] = useState("Select");
+  const [city, setCity] = useState("");
 
   const selectOneFile = async () => {
     try {
       const res = await getDocumentAsync({
-        type: "*/*",
+        type: [
+          "application/pdf",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/msword",
+        ],
         multiple: true,
         copyToCacheDirectory: true,
       });
       console.log(res, "qqqqqqqqqqqqqq");
       setPresentationFile(res);
-      Alert.alert("uploaded");
+      // Alert.alert("uploaded");
     } catch (err) {
       console.log(err, "errrrrrr");
     }
   };
-
-  const selectOneFile1 = async () => {
-    //Opening Document Picker for selection of one file
+  const selectOneFile2 = async () => {
     try {
       const res = await getDocumentAsync({
-        type: "*/*",
-        multiple: false,
+        type: [
+          "image/png",
+          "image/jpeg",
+        ],
+        multiple: true,
         copyToCacheDirectory: true,
       });
-      console.log(res);
-      if (res.type && res.type === "cancel") {
-        //If user canceled the document selection
-        console.log("Canceled from single doc picker");
-      } else {
-        //Printing the log realted to the file
-        console.log("res : " + JSON.stringify(res));
-        console.log("uri : " + res.uri);
-        console.log("type : " + res.type);
-        console.log("File name : " + res.name);
-        console.log("File Size : " + res.size, "1111111111");
-        //Setting the state to show single file attributes
-        const base64String = await FileSystem.readAsStringAsync(res.uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-        const extn = res.name ? res.name.split(".").pop() : "";
-        const fileType = mime.lookup(extn);
-        res.base64 = `data:${fileType};base64,${base64String}`;
-        res.extn = extn;
-        const fileUriPart = res.uri ? res.uri.split("/") : [];
-        const filename = fileUriPart.length
-          ? decodeURIComponent(fileUriPart[fileUriPart.length - 1])?.replace(
-              /\s/g,
-              "_"
-            )
-          : "";
-        res.filename = filename;
-        res.fileType = fileType;
-
-        setPresentationFile1(res);
-      }
+      console.log(res, "qqqqqqqqqqqqqq");
+      setPresentationFile2(res);
+      // Alert.alert("uploaded");
     } catch (err) {
-      //For Unknown Error
-      alert("Unknown Error: " + JSON.stringify(err));
-      console.log(err);
-      throw err;
+      console.log(err, "errrrrrr");
+    }
+  };
+  useEffect(() => {
+    getAllCountryList();
+   
+  }, []);
+
+  //Filter Country Data
+  const filtercountrylist = countrycityList.filter((item, index) => {
+    if (item?.dependent_value == "United Arab Emirates") {
+      let newData = {
+        key: index + 1,
+        label: item?.dependent_value,
+        value: item?.dependent_value,
+      };
+      return newData;
+    }
+  }); 
+  const uniqueIds = [];
+  const uniqueCountryName = filtercountrylist && filtercountrylist.filter((element) => {
+    // console.log("elementelement::", element)
+    const isDuplicate = uniqueIds.includes(element?.dependent_value);
+
+    if (!isDuplicate) {
+      uniqueIds.push(element.dependent_value);
+      return true;
+    }
+    return false;
+  });
+  //Mapping Country Data
+  const filteredCountryListArray = uniqueCountryName && uniqueCountryName.map((item, index) => {
+    let newData = {
+      key: index + 1,
+      label: item?.dependent_value,
+      value: item?.dependent_value,
+    };
+    return newData;
+  });
+  const filterCity = cityList.map((item, index) => {
+    let newData = {
+      key: index + 1,
+      label: item.value,
+      value: item.value,
+    };
+    return newData;
+  });
+  const getAllCountryList = async () => {
+    let token = await AsyncStorage.getItem("UserToken");
+    let myJson = {};
+    const result = await api.CreateMasterData(
+      endPoint.get_country,
+      token,
+      myJson
+    );
+     console.log("API LIst Data:::", result.data)
+    setCountrycityList(result.data);
+  };
+  
+
+  const selectOneFile1 = async () => {
+    try {
+      const res = await getDocumentAsync({
+        type: [
+          "application/pdf",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/msword",
+        ],
+        multiple: true,
+        copyToCacheDirectory: true,
+      });
+      console.log(res, "qqqqqqqqqqqqqq");
+      setPresentationFile1(res);
+      // Alert.alert("uploaded");
+    } catch (err) {
+      console.log(err, "errrrrrr");
     }
   };
   //const icon = 'https://svgshare.com/i/pSH.svg';
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Image,
+      allowsEditing: true,
+      base64: true,
+      bytes:true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    
+    // console.log(result.base64,"RTWYWUWUWIWIWI")
+    if (!result) {
+      
+      const extn = result.uri ? result.uri.split(".").pop() : "";
+      const fileUriPart = result.uri ? result.uri.split("/") : [];
+      const filename = fileUriPart.length
+        ? fileUriPart[fileUriPart.length - 1]
+        : "";
+      const imageObj: any = {
+         base64: result.base64,
+       
+        uri: result.uri,
+        extn,
+        type: `image/${extn}`,
+        name: filename,
+        // name:"data:image/jpg;base64," + result.base64
+      };
 
-  const handleSubmitPress = async () => {
+      setImage(imageObj);
+     
+    } else {
+      const extn = result.uri ? result.uri.split(".").pop() : "";
+      const fileUriPart = result.uri ? result.uri.split("/") : [];
+      const filename = fileUriPart.length
+        ? fileUriPart[fileUriPart.length - 1]
+        : "";
+      const imageObj: any = {
+         base64: result.assets[0].base64,
+       
+        uri: result.uri,
+        extn,
+        type: `image/${extn}`,
+        name: filename,
+        // name:"data:image/jpg;base64," + result.base64
+      };
+  //  setImageName()
+      setImage(imageObj);
+      //  setImage(null);
+    }
+
+  };
+  const handleSubmitPress = async (data) => {
     setPressed(true);
+    console.log(image.base64,'tyutu')
     var myJson = {
       company_name: companyName,
       firstname: firstname,
-      lastname: "WM",
+      lastname: lastName,
       email: email,
       password: password,
       cpassword: conPassword,
       countrycode: "971",
       mobile_no: mobileNumber,
       address: address,
-      country: "UAE",
-      city: "Dubai",
+      country: countrykey,
+      city: cityKey,
+      platform: "mobile",
+      profile : image.base64,
+      company_registration_no: code,
     };
-    console.log(myJson, "oi7856g66");
 
     const result = await api.createSupplier(endPoint.create_Supplier, myJson);
-    if (result.success === 1) {
-      alert("Register");
-      console.log(result, "RESULT");
+    console.log(result.data,'result')
+    if (result.success === "1") {
       refRBSheet2.current.open();
     } else {
-      setSignupError(result.meassage);
+      setSignupError(result.message);
       refRBSheet1.current.open();
     }
   };
@@ -212,10 +326,7 @@ export default function SignUp({ navigation }) {
   };
 
   // country code
-  const CountryCodeData = [
-    { key: 0, label: "Select" },
-    { key: 1, label: "UAE (+971)" },
-  ];
+  const CountryCodeData = [{ key: 1, label: "UAE (+971)" }];
 
   //RBSheet
   const refRBSheet = useRef();
@@ -223,7 +334,7 @@ export default function SignUp({ navigation }) {
   const refRBSheet1 = useRef();
 
   return (
-    <SafeAreaView style={[styles.flex1]}>
+    <View style={[styles.flex1, styles.whiteBg]}>
       <ScrollView style={[styles.whiteBg]}>
         <View style={styles.signupTitle}>
           <TouchableOpacity
@@ -234,6 +345,7 @@ export default function SignUp({ navigation }) {
             /> */}
             <LeftArrow />
           </TouchableOpacity>
+
           <Text
             style={[
               styles.signupTitleStyle,
@@ -247,7 +359,58 @@ export default function SignUp({ navigation }) {
         <Text style={styles.signupParagraph}>
           * Mandatory Fields are required
         </Text>
+        <View style={styles.backgrey}>
+          <View style={styles.signupInputContainer}>
+            <View style={styles.signupInputView}>
+              <Text
+                style={[
+                  styles.textDefault,
+                  styles.font12,
+                  styles.fontMed,
+                  styles.marBtm4,
+                ]}>
+                Profile Photo
+              </Text>
+              <View>
+  <TouchableOpacity
+    style={[
+      styles.dragDropView,
+      styles.flexColumn,
+      styles.alignCenter,
+      styles.justifyCenter,
+    ]}
+    onPress={() => pickImage()}
+  >
+    <View style={[styles.mb18]}>
+      <ChooseFile />
+    </View>
+    <Text style={[styles.font15, styles.textBlack, styles.mb3]}>
+      Choose file here
+    </Text>
+    <Text style={[styles.font12, styles.textDefault]}>
+      Tap here to upload your profile photo
+    </Text>
+  </TouchableOpacity>
+  {image && (
+    <View>
+      <Image
+        source={{ uri: image.uri}}
+        style={{ width: 200, height: 200 }} // Adjust the width and height as per your requirement
+      />
+      <Text style={{ fontSize: 13, fontWeight: '500' }}>
+        File Name: {image?.name ? image.name : ''}
+        {'\n'}
+      </Text>
+    </View>
+  )}
+</View>
 
+
+             
+            </View>
+
+          </View>
+        </View>
         <View style={styles.backgrey}>
           <View style={styles.signupInputContainer}>
             <View style={styles.signupInputView}>
@@ -268,7 +431,11 @@ export default function SignUp({ navigation }) {
                   rules={{ required: "Company name is required." }}
                   render={(props) => (
                     <TextInput
-                      style={[styles.inputStyle, styles.fontMed]}
+                      style={[
+                        styles.inputStyle,
+                        styles.fontMed,
+                        errors && errors.companyName && styles.borderRed,
+                      ]}
                       placeholder='Company Name'
                       placeholderTextColor='#BEBEBE'
                       onChangeText={(companyName) => {
@@ -304,7 +471,11 @@ export default function SignUp({ navigation }) {
                   rules={{ required: "Registration number is required." }}
                   render={(props) => (
                     <TextInput
-                      style={[styles.inputStyle, styles.fontMed]}
+                      style={[
+                        styles.inputStyle,
+                        styles.fontMed,
+                        errors && errors.code && styles.borderRed,
+                      ]}
                       placeholder='Registration No'
                       placeholderTextColor='#BEBEBE'
                       // onChangeText={(email) => setEmail(email)}
@@ -329,7 +500,7 @@ export default function SignUp({ navigation }) {
                   styles.fontMed,
                   styles.mb4,
                 ]}>
-                Contact Person Name
+                Contact Person First Name
                 <Text style={[styles.font12, styles.textPri1]}>*</Text>
               </Text>
 
@@ -337,11 +508,15 @@ export default function SignUp({ navigation }) {
                 <Controller
                   name='firstname'
                   control={control}
-                  rules={{ required: "Contact person name is required." }}
+                  rules={{ required: "Contact person First name is required." }}
                   render={(props) => (
                     <TextInput
-                      style={[styles.inputStyle, styles.fontMed]}
-                      placeholder='Contact Person Name'
+                      style={[
+                        styles.inputStyle,
+                        styles.fontMed,
+                        errors && errors.firstname && styles.borderRed,
+                      ]}
+                      placeholder='Contact Person First Name'
                       placeholderTextColor='#BEBEBE'
                       onChangeText={(firstname) => {
                         setFirstname(firstname);
@@ -353,6 +528,46 @@ export default function SignUp({ navigation }) {
                 {errors && errors.firstname && (
                   <Text style={[styles.errorMsg]}>
                     {errors.firstname.message}
+                  </Text>
+                )}
+              </View>
+            </View>
+            <View style={styles.signupInputView}>
+              <Text
+                style={[
+                  styles.labelText,
+                  styles.font12,
+                  styles.fontMed,
+                  styles.mb4,
+                ]}>
+                Contact Person Last Name
+                <Text style={[styles.font12, styles.textPri1]}>*</Text>
+              </Text>
+
+              <View>
+                <Controller
+                  name='lastName'
+                  control={control}
+                  rules={{ required: "Contact person Last name is required." }}
+                  render={(props) => (
+                    <TextInput
+                      style={[
+                        styles.inputStyle,
+                        styles.fontMed,
+                        errors && errors.lastName && styles.borderRed,
+                      ]}
+                      placeholder='Contact Person Last Name'
+                      placeholderTextColor='#BEBEBE'
+                      onChangeText={(lastName) => {
+                        setLastName(lastName);
+                        props.field.onChange(lastName);
+                      }}
+                    />
+                  )}
+                />
+                {errors && errors.lastName && (
+                  <Text style={[styles.errorMsg]}>
+                    {errors.lastName.message}
                   </Text>
                 )}
               </View>
@@ -382,7 +597,11 @@ export default function SignUp({ navigation }) {
                   }}
                   render={(props) => (
                     <TextInput
-                      style={[styles.inputStyle, styles.fontMed]}
+                      style={[
+                        styles.inputStyle,
+                        styles.fontMed,
+                        errors && errors.email && styles.borderRed,
+                      ]}
                       placeholder='Email'
                       placeholderTextColor='#BEBEBE'
                       onChangeText={(email) => {
@@ -426,46 +645,56 @@ export default function SignUp({ navigation }) {
                       style={[styles.modalDropDown]}
                     />
                   )} */}
-                  <DropDownIcon style={[styles.modalDropDown]} />
-                  <Controller
-                    name='countryCode'
-                    control={control}
-                    rules={{ required: "Country code is required." }}
-                    render={(props) => (
-                      <ModalSelector
-                        data={CountryCodeData}
-                        initValue={countrykey}
-                        selectStyle={[
-                          [styles.inputStyle, styles.fontMed],
-                          styles.flexRow,
-                          styles.alignCenter,
-                          styles.justifyStart,
-                        ]}
-                        initValueTextStyle={[
-                          styles.font15,
-                          styles.textBlack,
-                          styles.fontMed,
-                        ]}
-                        overlayStyle={[
-                          styles.popupOverlay,
-                          styles.flexColumn,
-                          styles.justifyEnd,
-                          styles.alignCenter,
-                        ]}
-                        optionContainerStyle={[styles.width300px]}
-                        cancelStyle={[styles.width300px, styles.marHorauto]}
-                        optionTextStyle={[styles.textBlack, styles.font15]}
-                        cancelTextStyle={[styles.textBlack, styles.font15]}
-                        onChange={(option) => {
-                          if (option.key) {
-                            setcountryCode(option.label);
-                            setcountrykey(option.label);
-                            props.field.onChange(option.label);
-                          }
-                        }}
-                      />
-                    )}
-                  />
+                  <View>
+                    {/* <DropDownIcon style={[styles.modalDropDown]} /> */}
+                    {/* <Controller
+                      name='countryCode'
+                      control={control}
+                      rules={{ required: "Country code is required." }}
+                      render={(props) => ( */}
+                    {/* <ModalSelector
+                      data={CountryCodeData}
+                      initValue={"UAE(+971)"}
+                      selectStyle={[
+                        [styles.inputStyle, styles.fontMed],
+                        styles.flexRow,
+                        styles.alignCenter,
+                        styles.justifyStart,
+                      ]}
+                      initValueTextStyle={[
+                        styles.font15,
+                        styles.textBlack,
+                        styles.fontMed,
+                      ]}
+                      overlayStyle={[
+                        styles.popupOverlay,
+                        styles.flexColumn,
+                        styles.justifyEnd,
+                        styles.alignCenter,
+                      ]}
+                      optionContainerStyle={[styles.width300px]}
+                      cancelStyle={[styles.width300px, styles.marHorauto]}
+                      optionTextStyle={[styles.textBlack, styles.font15]}
+                      cancelTextStyle={[styles.textBlack, styles.font15]}
+                      onChange={(option) => {
+                        if (option.key) {
+                          setcountryCode(option.label);
+                          setcountrykey(option.label);
+                          props.field.onChange(option.label);
+                        }
+                      }}
+                    /> */}
+                    {/* )}
+                    /> */}
+                    <View
+                      style={[
+                        styles.inputStyle,
+                        styles.flexRow,
+                        styles.alignCenter,
+                      ]}>
+                      <Text>UAE(+971)</Text>
+                    </View>
+                  </View>
                   {errors && errors.countryCode && (
                     <Text style={[styles.errorMsg]}>
                       {errors.countryCode.message}
@@ -488,13 +717,24 @@ export default function SignUp({ navigation }) {
                   <Controller
                     name='mobileNumber'
                     control={control}
-                    rules={{ required: "Mobile number is required." }}
+                    rules={{
+                      required: "Mobile number is required.",
+                      pattern: {
+                        value: /^\d{9}$/,
+                        message: "Mobile number is required.",
+                      },
+                    }}
+                    // rules={{ required: "Mobile number is required." }}
                     render={(props) => (
                       <TextInput
-                        style={[styles.inputStyle, styles.fontMed]}
+                        style={[
+                          styles.inputStyle,
+                          styles.fontMed,
+                          errors && errors.mobileNumber && styles.borderRed,
+                        ]}
                         placeholder='Mobile No'
                         keyboardType='numeric'
-                        maxLength={10}
+                        maxLength={9}
                         placeholderTextColor='#BEBEBE'
                         onChangeText={(mobileNumber) => {
                           setMobileNumber(mobileNumber);
@@ -536,6 +776,7 @@ export default function SignUp({ navigation }) {
                         styles.inputStyle,
                         styles.fontMed,
                         styles.textArae,
+                        errors && errors.address && styles.borderRed,
                       ]}
                       placeholder='Address'
                       placeholderTextColor='#BEBEBE'
@@ -551,6 +792,147 @@ export default function SignUp({ navigation }) {
                     {errors.address.message}
                   </Text>
                 )}
+              </View>
+            </View>
+            <View style={[styles.imageIcon, styles.signupInputView]}>
+            <View style={[styles.width50, styles.padR7]}>
+                <Text
+                  style={[
+                    styles.labelText,
+                    styles.font12,
+                    styles.fontMed,
+                    styles.mb4,
+                  ]}>
+                  Country 
+                  <Text style={[styles.font12, styles.textPri1]}>*</Text>
+                </Text>
+                <View>
+                 
+                  <View>
+                    <DropDownIcon style={[styles.modalDropDown]} /> 
+                    <Controller
+                    name='country'
+                    control={control}
+                    rules={{ required: "Country is required." }}
+                    render={(props) => (
+                      <ModalSelector
+                        data={filteredCountryListArray}
+                        initValue={countrykey}
+                        selectStyle={[
+                          styles.inputStyle,
+                          styles.fontMed,
+                          errors && errors.country && styles.borderRed,
+                          styles.height39,
+                        ]}
+                        initValueTextStyle={[
+                          styles.font15,
+                          styles.textBlack,
+                          styles.fontMed,
+                        ]}
+                        overlayStyle={[
+                          styles.popupOverlay,
+                          styles.flexColumn,
+                          styles.justifyEnd,
+                          styles.alignCenter,
+                        ]}
+                        optionContainerStyle={[styles.width300px]}
+                        cancelStyle={[styles.width300px, styles.marHorauto]}
+                        optionTextStyle={[styles.textBlack, styles.font15]}
+                        cancelTextStyle={[styles.textBlack, styles.font15]}
+                        onChange={(option) => {
+                          if (option.key) {
+                            setCountry(option.label);
+                            setcountrykey(option.label);
+                            props.field.onChange(option.label);
+                            setCityList(filtercountrylist);
+                          }
+                        }}
+                        value={countrykey}
+                      />
+                    )}
+                  />
+                </View>
+                {errors && errors.country && (
+                  <Text style={[styles.errorMsg]}>
+                    {errors.country.message}
+                  </Text>
+                )}
+                </View>
+              </View>
+              <View style={[styles.width50, styles.padR9]}>
+              <Text
+                style={[
+                  styles.labelText,
+                  styles.font12,
+                  styles.fontMed,
+                  styles.mb4,
+                ]}>
+                City <Text style={[styles.font12, styles.textPri1]}>*</Text>
+              </Text>
+              <View>
+                <View>
+                  {errors.city ? (
+                    // <SvgUri
+                    // source={require("../../../assets/images/dashboard/dropdown.svg")}
+                    // style={[styles.pressedmodalDropDown]}
+                    // />
+                    <View style={[styles.pressedmodalDropDown]}>
+                      <DropDown />
+                    </View>
+                  ) : (
+                    // <SvgUri
+                    // source={require("../../../assets/images/dashboard/dropdown.svg")}
+                    // style={[styles.modalDropDown]}
+                    // />
+                    <View style={[styles.pressedmodalDropDown]}>
+                      <DropDown />
+                    </View>
+                  )}
+
+                  <Controller
+                    name='city'
+                    control={control}
+                    rules={{ required: "City is required." }}
+                    render={(props) => (
+                      <ModalSelector
+                        data={filterCity}
+                        initValue={cityKey}
+                        selectStyle={[
+                          styles.inputStyle,
+                          styles.fontMed,
+                          errors && errors.city && styles.borderRed,
+                          styles.height39,
+                        ]}
+                        initValueTextStyle={[
+                          styles.font15,
+                          styles.textBlack,
+                          styles.fontMed,
+                        ]}
+                        overlayStyle={[
+                          styles.popupOverlay,
+                          styles.flexColumn,
+                          styles.justifyEnd,
+                          styles.alignCenter,
+                        ]}
+                        optionContainerStyle={[styles.width300px]}
+                        cancelStyle={[styles.width300px, styles.marHorauto]}
+                        optionTextStyle={[styles.textBlack, styles.font15]}
+                        cancelTextStyle={[styles.textBlack, styles.font15]}
+                        onChange={(option) => {
+                          if (option.key) {
+                            setCity(option.label);
+                            setCityKey(option.label);
+                            props.field.onChange(option.label);
+                          }
+                        }}
+                      />
+                    )}
+                  />
+                </View>
+                {errors && errors.city && (
+                  <Text style={[styles.errorMsg]}>{errors.city.message}</Text>
+                )}
+              </View>
               </View>
             </View>
           </View>
@@ -625,7 +1007,9 @@ export default function SignUp({ navigation }) {
                     styles.alignCenter,
                     styles.justifyCenter,
                   ]}
-                  onPress={() => selectOneFile1()}>
+                   onPress={() => selectOneFile1()}
+                  // onPress={()=>pickImage()}
+                  >
                   {/* // onPress={() => refRBSheet.current.open()}> */}
                   {/* <SvgUri
                     source={require("../assets/images/dashboard/choose_file.svg")}
@@ -674,7 +1058,12 @@ export default function SignUp({ navigation }) {
                   rules={{ required: "Password is required." }}
                   render={(props) => (
                     <TextInput
-                      style={[styles.inputStyle, styles.fontMed]}
+                      style={[
+                        styles.inputStyle,
+                        styles.fontMed,
+                        styles.padR50,
+                        errors && errors.password && styles.borderRed,
+                      ]}
                       placeholder='Password'
                       placeholderTextColor='#BEBEBE'
                       secureTextEntry={passwordVisibility}
@@ -743,7 +1132,12 @@ export default function SignUp({ navigation }) {
                   rules={{ required: "Confirm password is required." }}
                   render={(props) => (
                     <TextInput
-                      style={[styles.inputStyle, styles.fontMed]}
+                      style={[
+                        styles.inputStyle,
+                        styles.fontMed,
+                        errors && errors.conPassword && styles.borderRed,
+                        styles.padR50,
+                      ]}
                       placeholder='Confirm Password'
                       placeholderTextColor='#BEBEBE'
                       secureTextEntry={passwordVisibility1}
@@ -906,7 +1300,7 @@ export default function SignUp({ navigation }) {
               styles.mb11,
               styles.fontBold,
             ]}>
-            Supplier has been added successfully
+            Supplier has been Created Successfully
           </Text>
           <Text
             style={[
@@ -991,15 +1385,14 @@ export default function SignUp({ navigation }) {
           </Text>
           <View style={[styles.flexRow, styles.justifyCenter]}>
             <TouchableOpacity
+              onPress={() => refRBSheet1.current.close()}
               style={[
                 styles.continueBtn,
                 styles.width50,
                 styles.flexRow,
                 styles.justifyCenter,
               ]}>
-              <Text
-                style={[styles.font16, styles.textWhite, styles.letspa35]}
-                onPress={() => navigation.goBack()}>
+              <Text style={[styles.font16, styles.textWhite, styles.letspa35]}>
                 Go Back
               </Text>
             </TouchableOpacity>
@@ -1021,14 +1414,28 @@ export default function SignUp({ navigation }) {
               Sign Up
             </Text>
           </Button> */}
-          <Button
+          {/* <Button
             onPress={handleSubmit(handleSubmitPress)}
             style={[styles.primaryBg, styles.saveBtn, styles.width100]}
             title='Sign Up'
-          />
+          /> */}
+          <Button
+            onPress={handleSubmit(handleSubmitPress)}
+            style={[styles.primaryBg, styles.saveBtn, styles.width100]}>
+            <Text
+              style={[
+                styles.font15,
+                styles.letterSpa33,
+                styles.textWhite,
+                styles.fontMed,
+              ]}>
+              Sign Up
+            </Text>
+          </Button>
         </View>
       </TouchableOpacity>
       {/* save & continue button - Ends */}
-    </SafeAreaView>
+    </View>
   );
 }
+

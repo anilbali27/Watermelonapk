@@ -11,23 +11,21 @@ import Star from "../../../assets/images/icons/Star";
 import { G } from "react-native-svg";
 
 const OrderDetailCard = (props) => {
-  console.log(props,"propspropsprops")
-  const [count, setCount] = useState(1);
+  console.log(props, "propspropsprops");
+  const [count, setCount] = useState(props.quantity ? props.quantity : 1);
   const handleIncrement = () => {
     setCount(count + 1);
-    props.incrementqty(count + 1)
+    props.incrementqty(count + 1);
   };
 
   const handleDecrement = () => {
     if (count > 1) {
       setCount(count - 1);
-      props.incrementqty(count - 1)
+      props.incrementqty(count - 1);
     }
   };
 
   const images = props.image;
- 
-  
 
   return (
     <View style={GlobalStyles.orderDetailCardGlobalView}>
@@ -43,9 +41,8 @@ const OrderDetailCard = (props) => {
                 source={{
                   uri: `https://stagingapi.watermelon.market/upload/upload_photo/${images}`,
                 }}
-                style={GlobalStyles.invoiceImg}
-              ></Image>
-              
+                style={GlobalStyles.invoiceImg}></Image>
+
               {/* <View style={GlobalStyles.addSubView}>
                 <View style={GlobalStyles.addSubViewOne}>
                   <Pressable onPress={handleDecrement}>
@@ -63,45 +60,44 @@ const OrderDetailCard = (props) => {
                   </Pressable>
                 </View>
               </View> */}
- {props.status === 10 ? (
-          <View style={GlobalStyles.addSubView}>
-          <View style={GlobalStyles.addSubViewOne}>
-            <Pressable onPress={handleDecrement}>
-              <View style={GlobalStyles.addSubViewTwo}>
-                <Text style={GlobalStyles.colorTwo}>-</Text>
-              </View>
-            </Pressable>
-            <View style={GlobalStyles.addSubViewTwo}>
-              <Text style={GlobalStyles.colorTwo}>{count}</Text>
-            </View>
-            <Pressable o onPress={handleIncrement}>
-              <View style={GlobalStyles.addSubViewFour}>
-                <Text style={GlobalStyles.colorTwo}>+</Text>
-              </View>
-            </Pressable>
-          </View>
-        </View> 
-          ) : (
-            <View style={GlobalStyles.addSubView}>
-            <View style={GlobalStyles.addSubViewOne}>
-              {/* <Pressable 
+              {props.status === 10 ? (
+                <View style={GlobalStyles.addSubView}>
+                  <View style={GlobalStyles.addSubViewOne}>
+                    <Pressable onPress={handleDecrement}>
+                      <View style={GlobalStyles.addSubViewTwo}>
+                        <Text style={GlobalStyles.colorTwo}>-</Text>
+                      </View>
+                    </Pressable>
+                    <View style={GlobalStyles.addSubViewTwo}>
+                      <Text style={GlobalStyles.colorTwo}>{count}</Text>
+                    </View>
+                    <Pressable o onPress={handleIncrement}>
+                      <View style={GlobalStyles.addSubViewFour}>
+                        <Text style={GlobalStyles.colorTwo}>+</Text>
+                      </View>
+                    </Pressable>
+                  </View>
+                </View>
+              ) : (
+                <View style={GlobalStyles.addSubView}>
+                  <View style={GlobalStyles.addSubViewOne}>
+                    {/* <Pressable 
               onPress={handleDecrement}> */}
-                <View style={GlobalStyles.addSubViewTwo}>
-                  <Text style={GlobalStyles.colorTwo}>-</Text>
+                    <View style={GlobalStyles.addSubViewTwo}>
+                      <Text style={GlobalStyles.colorTwo}>-</Text>
+                    </View>
+                    {/* </Pressable> */}
+                    <View style={GlobalStyles.addSubViewTwo}>
+                      <Text style={GlobalStyles.colorTwo}>{count}</Text>
+                    </View>
+                    {/* <Pressable o onPress={handleIncrement}> */}
+                    <View style={GlobalStyles.addSubViewFour}>
+                      <Text style={GlobalStyles.colorTwo}>+</Text>
+                    </View>
+                    {/* </Pressable> */}
+                  </View>
                 </View>
-              {/* </Pressable> */}
-              <View style={GlobalStyles.addSubViewTwo}>
-                <Text style={GlobalStyles.colorTwo}>{count}</Text>
-              </View>
-              {/* <Pressable o onPress={handleIncrement}> */}
-                <View style={GlobalStyles.addSubViewFour}>
-                  <Text style={GlobalStyles.colorTwo}>+</Text>
-                </View>
-              {/* </Pressable> */}
-            </View>
-          </View> 
-          )}
-            
+              )}
             </View>
             <View style={GlobalStyles.width70}>
               <Text style={GlobalStyles.orderDetailCardHeading}>
@@ -112,8 +108,7 @@ const OrderDetailCard = (props) => {
                   GlobalStyles.font10,
                   GlobalStyles.textDefault,
                   GlobalStyles.mb3,
-                ]}
-              >
+                ]}>
                 {props.displayskuName}
               </Text>
               <Text
@@ -121,8 +116,7 @@ const OrderDetailCard = (props) => {
                   GlobalStyles.font10,
                   GlobalStyles.textDefault,
                   GlobalStyles.mb3,
-                ]}
-              >
+                ]}>
                 Package {props.displayskuName}
               </Text>
               <Text
@@ -135,11 +129,12 @@ const OrderDetailCard = (props) => {
               </Text>
               <View style={GlobalStyles.orderCardflexView}>
                 <View>
-                  <Text   style={[
-                  GlobalStyles.font14,
-                  GlobalStyles.amountText,
-                  GlobalStyles.fontSemi,
-                ]}>
+                  <Text
+                    style={[
+                      GlobalStyles.font14,
+                      GlobalStyles.amountText,
+                      GlobalStyles.fontSemi,
+                    ]}>
                     AED {props.costPriceperUnit * count}
                   </Text>
                 </View>

@@ -21,6 +21,7 @@ import {
   Dimensions,
 } from "react-native";
 import RBSheet from "react-native-raw-bottom-sheet";
+import DropDownIcon from "../../../assets/images/dashboard/dropdown";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ModalSelector from "react-native-modal-selector";
@@ -51,6 +52,7 @@ export default function Edittier({ route, navigation }) {
   const [value1, setValue1] = useState(route.params.value1);
   console.log(typeof route.params.value, "9078776");
   const [editTierError, setEditTierError] = useState("");
+  const [amountTypekey, setamountTypekey] = useState(0);
 
   // const[TierData,setTierData] = useState('false');
 
@@ -70,7 +72,7 @@ export default function Edittier({ route, navigation }) {
       name: tierName,
       platform: "",
       supplier_id: id,
-      status: "",
+      status: 1,
     };
     console.log(myJson, "9900tyu90");
     const result = await api.edittier(token, endPoint.edit_tier, myJson);
@@ -82,9 +84,13 @@ export default function Edittier({ route, navigation }) {
       refRBSheet1.current.open();
     }
   };
+  const AmountTypeData = [
+    { key: 1, label: "Increase", value: 1 },
+    { key: 2, label: "Decrease", value: 2 },
+  ];
 
   return (
-    <SafeAreaView style={[styles.width100, styles.flex1]}>
+    <View style={[styles.width100, styles.flex1]}>
       <ScrollView style={[styles.grayBg, styles.width100]}>
         <View
           style={[
@@ -149,7 +155,7 @@ export default function Edittier({ route, navigation }) {
               )}
             </View>
           </View>
-          <View style={styles.inputView}>
+          {/* <View style={styles.inputView}>
             <Text
               style={[
                 styles.textDefault,
@@ -188,6 +194,67 @@ export default function Edittier({ route, navigation }) {
                 <Text style={[styles.errorMsg]}>Amount type is required.</Text>
               )}
             </View>
+          </View> */}
+          <View style={[styles.width100, styles.padR7]}>
+            <Text
+              style={[
+                styles.textDefault,
+                styles.font12,
+                styles.fontMed,
+                styles.marBtm4,
+              ]}>
+              Select Amount Type{" "}
+              <Text style={[styles.font12, styles.textPri1]}>*</Text>
+            </Text>
+            <View>
+              <DropDownIcon style={[styles.modalDropDown]} />
+              <Controller
+                name='amountType'
+                control={control}
+                // rules={{ required: "Amount type is required." }}
+                render={(props) => (
+                  <ModalSelector
+                    data={AmountTypeData}
+                    initValue={amountType}
+                    selectStyle={[
+                      styles.inputStyle,
+                      styles.flexRow,
+                      styles.alignCenter,
+                      styles.justifyStart,
+                      styles.marBtm4,
+                      styles.borderDefault,
+                      // errors && errors.amountType && styles.borderRed,
+                    ]}
+                    initValueTextStyle={[
+                      styles.font15,
+                      styles.textBlack,
+                      styles.fontMed,
+                    ]}
+                    overlayStyle={[
+                      styles.popupOverlay,
+                      styles.flexColumn,
+                      styles.justifyEnd,
+                      styles.alignCenter,
+                    ]}
+                    optionContainerStyle={[styles.width300px]}
+                    cancelStyle={[styles.width300px, styles.marHorauto]}
+                    optionTextStyle={[styles.textBlack, styles.font15]}
+                    cancelTextStyle={[styles.textBlack, styles.font15]}
+                    onChange={(option) => {
+                      if (option.key) {
+                        setamountType(option.label);
+                        setamountTypekey(option.value);
+                        props.field.onChange(option.value);
+                      }
+                    }}
+                    value={amountType}
+                  />
+                )}
+              />
+            </View>
+            {/* {amountType && (
+                <Text style={[styles.errorMsg]}>Amount type is required.</Text>
+              )} */}
           </View>
           <View style={styles.inputView}>
             <Text
@@ -215,7 +282,7 @@ export default function Edittier({ route, navigation }) {
                     ]}
                     keyboardType='numeric'
                     placeholderTextColor='#222B2E'
-                    value={value1.toString()}
+                    value={value1?.toString() || ""}
                     // value={value1}
                     onChangeText={(value1) => {
                       setValue1(value1);
@@ -332,7 +399,11 @@ export default function Edittier({ route, navigation }) {
               ]}
               onPress={() => {
                 navigation.goBack();
-              }}>
+              }}
+              // onPress={() => {
+              //   navigation.navigate("Catelogue", { category: "tier" });
+              // }}
+            >
               <Text
                 style={[styles.font16, styles.textWhite, styles.letspa35]}
                 // onPress={() => {
@@ -413,6 +484,6 @@ export default function Edittier({ route, navigation }) {
         </View>
         {/* error Popup Ends */}
       </RBSheet>
-    </SafeAreaView>
+    </View>
   );
 }

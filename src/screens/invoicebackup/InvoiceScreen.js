@@ -678,7 +678,7 @@ const InvoiceScreen = ({ navigation }) => {
   ));
   const getInvoiceList = async (id) => {
     const accesstoken = await AsyncStorage.getItem("UserToken");
-    const supplierId = await AsyncStorage.getItem("id");
+    const supplierId = await AsyncStorage.getItem("userTypeId");
     var myJson = {
       supplier_id: supplierId,
     };
@@ -944,7 +944,6 @@ const InvoiceScreen = ({ navigation }) => {
           transparent={false}
           visible={invoiceModal}
           onRequestClose={() => {
-            console.log("Modal has been closed.");
           }}>
           <ScrollView></ScrollView>
         </Modal>

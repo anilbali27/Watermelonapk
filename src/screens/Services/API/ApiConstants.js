@@ -21,7 +21,7 @@ export const endPoint = {
   //getCatelogue
   get_Catelogue: "products",
   //gethashtag
-  get_hashtag: "products/hashtag_list",
+  get_hashtag: "hashtags",
   //getSKUS
   get_skus: "sku",
   //getCountry
@@ -92,9 +92,35 @@ export const endPoint = {
   status_change:"orders/update-status",
   //get_Warehouse
   get_Warehouse:"warehouses",
+  //get skulist
+  get_all_skus:"products/sku_list",
   //defaultscreen
   update_defaultSetting: "settings/updateDefaultsetting",
+//getallbuyers
+all_buyers :"buyers/buyer-list",
+//add buyers
+add_buyers:"supbuymap/create",
+//deletesubcataloguesku
+delete_sku:"subcatalogue/deleteSKU",
+//getType
+get_Type:"parameters",
+//createInventory
+create_Inventory:"inventory/create",
+//view sub catelogue
+subcatalogue_show:"subcatalogue/show",
+//unassignBuyers
+unassign_Buyers:"subcatalogue/removeBuyer",
 
+ //createWareHouse
+ create_wareHouse: "warehouses/create",
+ //edit warehouse
+ edit_warehouse: "warehouses/update",
+ //default supplier
+ supplier_default: "suppliers",
+ //supplier category
+ supplier_category: "supplier-category",
+ //delete warehouse
+ delete_warehouse: "warehouses/changeStatus",
 };
 
 /** @format */

@@ -203,13 +203,15 @@ const InventoryCard = (props) => {
           }}>
           <Text style={GlobalStyles.aedValueText}>AED {props.totalPrice}</Text>
 
-          <View style={GlobalStyles.flexRow}>
-            <TouchableOpacity onPress={() => EditStock()}>
+          {/* <View style={GlobalStyles.flexRow}>
+            <TouchableOpacity
+              onPress={() => EditStock()}
+            >
               <View>
                 <MaterialIcons name='edit' size={16} color={COLORS.button} />
               </View>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </View>
     </View>

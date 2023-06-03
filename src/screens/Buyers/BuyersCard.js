@@ -87,7 +87,7 @@ const BuyersCard = (props) => {
                 <View style={GlobalStyles.outletEmailView}>
                   <View>
                     <Text style={GlobalStyles.outletEmailText}>
-                    Buyer Type : {props.buyer_type} 
+                    Buyer Type : {props.buyer_type ? props.buyer_type : "NA"} 
                     </Text>
                   </View>
                 </View>
@@ -100,7 +100,7 @@ const BuyersCard = (props) => {
                 </View> */}
               </View>
 
-              <View style={GlobalStyles.bottomLineOutletcard}>
+              {/* <View style={GlobalStyles.bottomLineOutletcard}>
                 <View style={GlobalStyles.justifyContentCenter}>
                   <View style={GlobalStyles.outletEmailView}>
                     <View style={{ width: "70%" }}>
@@ -108,7 +108,7 @@ const BuyersCard = (props) => {
                     </View>
                   </View>
                 </View>
-              </View>
+              </View> */}
             </View>
           </View>
         </View>

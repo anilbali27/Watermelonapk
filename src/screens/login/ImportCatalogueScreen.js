@@ -33,7 +33,11 @@ export default function ImportCatalogueScreen({ navigation }) {
     //Opening Document Picker for selection of one file
     try {
       const res = await getDocumentAsync({
-        type: "*/*",
+        type: [
+          "application/pdf",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          "application/msword",
+        ],
         multiple: false,
         copyToCacheDirectory: true,
       });

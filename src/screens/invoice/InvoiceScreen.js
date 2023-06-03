@@ -35,6 +35,7 @@ import ArrowRight from "../../../assets/images/icons/ArrowRight";
 import SearchIcon from "../../../assets/images/icons/Search";
 import FilterIcon from "../../../assets/images/dashboard/filter_icon";
 import SettingIcon from "../../../assets/images/icons/Setting";
+import BackArrow from "../../../assets/images/icons/BackArrow";
 import { COLORS } from "../../constant/Colors";
 const InvoiceScreen = ({ navigation }) => {
   const refRBSheet = useRef();
@@ -58,6 +59,7 @@ const InvoiceScreen = ({ navigation }) => {
   const [statuss, setStatuss] = useState();
   const [selectedBuyer, setSelectedBuyer] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const [selectedOutlet, setselectedOutlet] = useState("");
   const height = React.useRef(null);
@@ -124,11 +126,9 @@ const InvoiceScreen = ({ navigation }) => {
 
   const statussList = ["active", "inactive", "all"];
   const handlePress = (name) => {
-    console.log(name, "anil");
   };
 
   useEffect(() => {
-    console.log(suppliers, outlets, status, "0000000000000000000000");
     if (suppliers === true || outlets === true || status === true) {
       animationValue.setValue(1);
     } else {
@@ -142,52 +142,74 @@ const InvoiceScreen = ({ navigation }) => {
   }, []);
 
   //search function
+  // const searchFilterFunction = (text) => {
+  //   if (text) {
+  //     setSearch(text);
+  //     const filteredData = tempinvoicedata.filter(
+  //       (element) =>
+  //         element.status_name.toLowerCase().includes(text.toLowerCase()) ||
+  //         element.buyer_company_name
+  //           .toLowerCase()
+  //           .includes(text.toLowerCase()) ||
+  //         element.outlet_info.name.toLowerCase().includes(text.toLowerCase()) ||
+  //         element.unique_name.toLowerCase().includes(text.toLowerCase()) ||
+  //         element.total_cost_amount||
+  //         element.delivery_requested.delivery_date
+  //     );
+  //     if (filteredData.length > 0) {
+  //       setinvoiceList(filteredData);
+  //       setSearch(text);
+  //     } else {
+  //       setSearch(text);
+  //       setinvoiceList([]);
+  //     }
+  //   } else {
+  //     setSearch("");
+  //     setinvoiceList(tempinvoicedata);
+  //   }
+  // };
   const searchFilterFunction = (text) => {
     if (text) {
-      console.log(text, "text");
+      const newData = tempinvoicedata.filter((item) => {
+        const itemData = item.status_name
+          ? item.status_name.toUpperCase() +
+          item.buyer_company_name.toUpperCase() +
+          item.outlet_info.name.toUpperCase() 
+          +  item.unique_name.name +
+          item.total_cost_amount.name
+        
+          : "".toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setinvoiceList(newData);
       setSearch(text);
-      const filteredData = tempinvoicedata.filter(
-        (element) =>
-          element.status_name.toLowerCase().includes(text.toLowerCase()) ||
-          element.buyer_company_name
-            .toLowerCase()
-            .includes(text.toLowerCase()) ||
-          element.outlet_info.name.toLowerCase().includes(text.toLowerCase())
-      );
-      console.log(filteredData, "filteredData");
-      if (filteredData.length > 0) {
-        setinvoiceList(filteredData);
-        setSearch(text);
-      } else {
-        setSearch(text);
-        setinvoiceList([]);
-      }
     } else {
-      setSearch("");
       setinvoiceList(tempinvoicedata);
+      setSearch(text);
     }
   };
-
   const getInvoiceList = async (id) => {
+    
     const accesstoken = await AsyncStorage.getItem("UserToken");
-    const supplierId = await AsyncStorage.getItem("id");
+    const supplierId = await AsyncStorage.getItem("userTypeId");
     var myJson = {
       supplier_id: supplierId,
     };
-
     const result = await api.getInvoice(
       accesstoken,
       endPoint.invoice_list,
       myJson
     );
 
-    if (result.success) {
-      console.log(result.data?.invoices, "myJsontyuyuiuiuiui");
-
+    if (result.success === "1") {
+      
       setinvoiceList(result.data?.invoices);
+
       settempinvoicedata(result.data?.invoices);
       setinvoicedata(result.data?.invoices);
       setfilterData(result.data?.invoices);
+      setIsLoading(false);
     } else {
       setinvoicedata([]);
     }
@@ -245,36 +267,40 @@ const InvoiceScreen = ({ navigation }) => {
 
   //search function
   const showresult = (selectedBuyer, selectedOutlet, selectedStatus) => {
-    console.log(selectedBuyer, selectedOutlet, selectedStatus);
-    if (selectedBuyer || selectedOutlet || selectedStatus) {
-      const newData = tempinvoicedata.filter((item) => {
-        const itemData =
-          (item.outlet_info.name
-            ? item.outlet_info.name.toUpperCase() + " - "
-            : "") +
-          (item.buyer_company_name
-            ? item.buyer_company_name.toUpperCase()
-            : "") +
-          (item.status_name ? " - " + item.status_name.toUpperCase() : "");
-
-        const textData1 = selectedBuyer || "";
-        const textData2 = selectedOutlet || "";
-        const textData3 = selectedStatus || "";
-
-        return (
-          itemData.indexOf(textData1.toUpperCase()) > -1 &&
-          itemData.indexOf(textData2.toUpperCase()) > -1 &&
-          itemData.indexOf(textData3.toUpperCase()) > -1
-        );
-      });
-      setinvoiceList(newData);
-      refRBSheet.current.close();
-    } else {
-      refRBSheet.current.close();
-      setinvoiceList(tempinvoicedata);
+    let newData = filterdData;
+    if (selectedBuyer) {
+      newData = newData.filter(
+        (item) => item.buyer_company_name === selectedBuyer
+      );
     }
-  };
 
+    if (selectedOutlet) {
+      newData = newData.filter(
+        (item) => item.outlet_info.name === selectedOutlet
+      );
+    }
+
+    if (selectedStatus) {
+      newData = newData.filter(
+        (item) => item.status_name === selectedStatus
+      );
+    }
+    if (
+      !selectedBuyer &&
+      !selectedOutlet &&
+      !selectedStatus
+    ) {
+      newData = invoiceList;
+    }
+    refRBSheet.current.close();
+    if (newData.length === 0) {
+      setinvoiceList([]);
+    } else {
+      setinvoiceList(newData);
+    }
+    
+  };
+  
   const clearFilters = () => {
     setinvoiceList(tempinvoicedata);
     setSelectedBuyer(null);
@@ -298,7 +324,23 @@ const InvoiceScreen = ({ navigation }) => {
   }
 
   return (
-    <SafeAreaView>
+    <View>
+      <View style={GlobalStyles.paymentHeaderView}>
+        <View style={GlobalStyles.paymentHeaderPaddingView}>
+          <View style={GlobalStyles.changeFlexDirection}>
+            <View style={{ justifyContent: "center" }}>
+              <TouchableOpacity
+                onPress={() => {
+                  //   navigation.navigate("DrawerNavigationRoutes");
+                  navigation.goBack();
+                }}>
+                <BackArrow />
+              </TouchableOpacity>
+            </View>
+            <Text style={GlobalStyles.menuText}>Invoices</Text>
+          </View>
+        </View>
+      </View>
       <View style={GlobalStyles.defaultScreenContainerInvoice}>
         {/* <View style={GlobalStyles.invoiceSearchContainer}>
  <AntDesign
@@ -316,6 +358,7 @@ const InvoiceScreen = ({ navigation }) => {
  color='#0F141A'
  />
  </View> */}
+
         <View style={GlobalStyles.searchBarPaddingViewInvoice}>
           <View style={GlobalStyles.searchBarView}>
             <View style={GlobalStyles.searchIconView}>
@@ -343,11 +386,11 @@ const InvoiceScreen = ({ navigation }) => {
         </View>
 
         <View style={{ paddingBottom: 140 }}>
-          {!invoiceList ? (
-            <View>
-              <ActivityIndicator color={COLORS.button} size='large' />
-            </View>
-          ) : (
+        {isLoading ? (
+  <View>
+    <ActivityIndicator color={COLORS.button} size='large' />
+  </View>
+) : (
             <FlatList
               data={invoiceList}
               showsVerticalScrollIndicator={false}
@@ -372,7 +415,7 @@ const InvoiceScreen = ({ navigation }) => {
                                 GlobalStyles.textBlack,
                                 GlobalStyles.fontBold,
                               ]}>
-                              {item.buyer_company_name}
+                              {item.buyer_company_name ? item.buyer_company_name : "NA"}
                             </Text>
                           </View>
                           <View>
@@ -470,11 +513,8 @@ const InvoiceScreen = ({ navigation }) => {
                   </View>
                 </TouchableOpacity>
               )}
-              ListEmptyComponent={
-                <View style={{ flex: 1 }}>
-                  <ActivityIndicator color={COLORS.button} size='large' />
-                </View>
-              }
+             
+              ListEmptyComponent={isLoading ? null : renderEmpty}
             />
           )}
         </View>
@@ -545,7 +585,6 @@ const InvoiceScreen = ({ navigation }) => {
           transparent={false}
           visible={invoiceModal}
           onRequestClose={() => {
-            console.log("Modal has been closed.");
           }}>
           <ScrollView></ScrollView>
         </Modal>
@@ -752,7 +791,7 @@ const InvoiceScreen = ({ navigation }) => {
           </View>
         </RBSheet>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

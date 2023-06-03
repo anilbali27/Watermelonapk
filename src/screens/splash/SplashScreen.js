@@ -1,24 +1,79 @@
 /** @format */
 
-import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, SafeAreaView } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SvgUri } from "react-native-svg";
+import { StatusBar } from "expo-status-bar";
+import { useIsFocused } from "@react-navigation/native";
+
 import AppIntroSlider from "../../components/introSlider/IntroSlider";
 import { COLORS } from "../../../src/constant/Colors";
 import { FONTS } from "../../../src/constant/Font";
 import GlobalStyles from "../../../assets/css/styles";
 import LoginScreen from "../login/LoginScreen";
 
+// global.myVariable = 1;
+
+// export const myVariable = 1;
+
 const SplashScreen = ({ navigation }) => {
   const [showRealApp, setShowRealApp] = useState(false);
+  const [tokenData, setTokenData] = useState("");
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    const getToken = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem("UserToken");
+        let token = jsonValue;
+        setTokenData(token);
+        console.log(token, "141");
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getToken();
+  }, [isFocused]);
+
+  // console.log(token, "112");
+  // const getToken = async () => {
+  //   const tokenData = await AsyncStorage.getItem("UserToken");
+  //   setToken(tokenData);
+  // };
+
+  // var number = 1;
+
+  // const getToken = async () => {
+  //   const jsonValue = await AsyncStorage.getItem("UserToken");
+  //   let token = jsonValue;
+  //   setTokenData(token);
+  //   const id = await AsyncStorage.getItem("id");
+  //   console.log(id, "196");
+  //   console.log(token, "11235");
+  // };
 
   const onDone = () => {
-    navigation.navigate("LoginScreen");
+    {
+      tokenData
+        ? navigation.navigate("DrawerNavigationRoutes")
+        : navigation.navigate("LoginScreen");
+    }
   };
   const onSkip = () => {
-    navigation.navigate("LoginScreen");
+    {
+      tokenData
+        ? navigation.navigate("DrawerNavigationRoutes")
+        : navigation.navigate("LoginScreen");
+    }
   };
+
+  // const onDone = () => {
+  //   navigation.navigate("DrawerNavigationRoutes");
+  // };
+  // const onSkip = () => {
+  //   navigation.navigate("DrawerNavigationRoutes");
+  // };
 
   const RenderItem = ({ item }) => {
     return (

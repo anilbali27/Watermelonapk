@@ -41,7 +41,7 @@ import SearchIcon from "../../../assets/images/icons/Search";
 import SettingIcon from "../../../assets/images/icons/Setting";
 import { COLORS } from "../../constant/Colors";
 
-export default function Catelogue({ navigation }) {
+export default function Catelogue({ navigation, route }) {
   const [Productsdata, setProductsdata] = useState([]);
   const [filterdData, setfilterdData] = useState([]);
   const [filterdData1, setfilterdData1] = useState([]);
@@ -74,13 +74,7 @@ export default function Catelogue({ navigation }) {
   const [selectedSubCategory, setSelectedSubCategory] = useState("");
 
   const [selectedCategory, setSelectedCategory] = useState("");
-
-  useEffect(() => {
-    getTiers();
-    getProducts();
-    getSubCatalogueList();
-  }, []);
-
+  const { category } = route?.params || {};
   const [animationValue] = useState(() => new Animated.Value(0));
 
   const maxHeight = animationValue.interpolate({
@@ -96,18 +90,24 @@ export default function Catelogue({ navigation }) {
     setSelectedStatus(null);
     refRBSheet.current.close();
   };
-
+  // alert(category)
   useEffect(() => {
     getProducts();
-  }, [isFocused]);
-
-  useEffect(() => {
     getTiers();
-  }, []);
-
-  useEffect(() => {
     getSubCatalogueList();
-  }, []);
+
+    if (category === "subcatlouge") {
+      onPressofSubCatalogue();
+      setCatelogue(false);
+      setsubCatalogue(true);
+    }
+    if (category === "tier") {
+      onPressofTier();
+      setCatelogue(false);
+      setsubCatalogue(false);
+      settier(true);
+    }
+  }, [isFocused]);
 
   const onPressofCatalogues = () => {
     settier(false);
@@ -141,15 +141,15 @@ export default function Catelogue({ navigation }) {
   //search function
   const searchFilterFunction = (text) => {
     if (text) {
-      // const newData = Productsdata.filter((item) => {
-      //   const itemData = item.product_name
-      //     ? item.category_id.toUpperCase()
-      //     : "".toUpperCase();
+      
       const newData = Productsdata.filter((item) => {
         const itemData = item.product_name
           ? item.product_name.toUpperCase() +
-            item.category_id.toUpperCase() +
-            item.subCategory_id
+            item.category_name.toUpperCase() +
+            item.subcategory_name.toUpperCase() +
+            item.supplier_product_code.toUpperCase() +
+            item.base_uom.toUpperCase() +
+            item.status_name.toUpperCase()
           : "".toUpperCase();
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
@@ -165,15 +165,13 @@ export default function Catelogue({ navigation }) {
   // subcatalogue search
   const searchFilterFunction2 = (text) => {
     if (text) {
-      // const newData = Productsdata.filter((item) => {
-      //   const itemData = item.product_name
-      //     ? item.category_id.toUpperCase()
-      //     : "".toUpperCase();
+      
       const newData = subdata.filter((item) => {
         const itemData = item.subcatalogue_name
           ? item.subcatalogue_name.toUpperCase() +
             item.subcatalogue_no.toUpperCase() +
-            item.sku_id
+            item.sku_id +
+            item.status_name.toUpperCase()
           : "".toUpperCase();
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
@@ -417,7 +415,7 @@ export default function Catelogue({ navigation }) {
   const searchFilterFunction1 = (text) => {
     if (text) {
       const newData = tierdata.filter((item) => {
-        // const itemData = item.name ? item.name.toUpperCase() : "".toUpperCase();
+    
         const itemData = item.name
           ? item.name.toUpperCase() +
             item.amount_type.toUpperCase() +
@@ -445,9 +443,7 @@ export default function Catelogue({ navigation }) {
       user_type_id: id,
       // user_type_id: "60784da77b60b7605a47a41c",
     };
-    console.log("myJsoncateloguelist::", myJson);
     const result = await api.getProduct(token, endPoint.get_products, myJson);
-    // console.log(result.data, "Cateloguelist");
     setIsLoading(false);
     if (result) {
       setmyproducts(result);
@@ -462,11 +458,10 @@ export default function Catelogue({ navigation }) {
     const jsonValue = await AsyncStorage.getItem("UserToken");
     const id = await AsyncStorage.getItem("userTypeId");
     let token = jsonValue;
-    // let token =
-    //   "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvc3RhZ2luZ2FwaS53YXRlcm1lbG9uLm1hcmtldFwvaW5kZXgucGhwXC9hcGlcL3YxXC9sb2dpbiIsImlhdCI6MTY3NzU2NDQ3MSwiZXhwIjoxNzA5MTAwNDcxLCJuYmYiOjE2Nzc1NjQ0NzEsImp0aSI6InJrNWpZQnNITEVDNDJjV2siLCJzdWIiOiI2MDc4NGRhNzdiNjBiNzYwNWE0N2E0MWUiLCJwcnYiOiI4N2UwYWYxZWY5ZmQxNTgxMmZkZWM5NzE1M2ExNGUwYjA0NzU0NmFhIn0.injAIleCfRPGGOSap-YRc3DOATW9V0XN_JdH1uhy5K4";
+    
     var myJson = {
       supplier_id: id,
-      // user_type_id: "60784da77b60b7605a47a41c",
+      
     };
     const result = await api.getTier(token, endPoint.get_tiers, myJson);
 
@@ -505,15 +500,15 @@ export default function Catelogue({ navigation }) {
   const ItemSepartorView = () => {
     return <View style={{ height: 0, width: "100%" }} />;
   };
-  useFocusEffect(
-    React.useCallback(() => {
-      //Below alert will fire every time when profile screen is focused
-      settier(false);
-      setsubCatalogue(false);
-      setimportCatalogue(false);
-      setallCatalogues(true);
-    }, [])
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     //Below alert will fire every time when profile screen is focused
+  //     settier(false);
+  //     setsubCatalogue(false);
+  //     setimportCatalogue(false);
+  //     setallCatalogues(true);
+  //   }, [])
+  // );
   //Loader
   const Loader = () => (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -522,8 +517,8 @@ export default function Catelogue({ navigation }) {
   );
   return (
     <>
-      <SafeAreaView style={{ flex: 0, backgroundColor: "#1F9CEF" }} />
-      <StatusBar backgroundColor='#1F9CEF' />
+      {/* <SafeAreaView style={{ flex: 0, backgroundColor: "#1F9CEF" }} /> */}
+      {/* <StatusBar backgroundColor='#1F9CEF' /> */}
       <View style={GlobalStyles.orderContainer}>
         <View style={GlobalStyles.headerContainer}>
           <View style={GlobalStyles.headerAligment}>
@@ -537,7 +532,7 @@ export default function Catelogue({ navigation }) {
                     <MenuIcon />
                   </TouchableOpacity>
                 </View>
-                <Text style={GlobalStyles.menuText}>catalogue</Text>
+                <Text style={GlobalStyles.menuText}>Catalogue</Text>
               </View>
               <TouchableOpacity
                 onPress={() => navigation.navigate("NotificationScreen")}>
@@ -693,8 +688,11 @@ export default function Catelogue({ navigation }) {
                       category_name={item?.category_name}
                       subcategory_name={item?.subcategory_name}
                       in_stack={item?.in_stock}
+                      status={item?.status_name}
+                      marketPlace={item?.in_marketplace}
                       subcategory_id={item?.subcategory_id}
                       product_image={item?.product_image}
+                      umo={item?.base_uom}
                       navigation={navigation}
                       updateData={() => getProducts()}
                     />
@@ -769,6 +767,8 @@ export default function Catelogue({ navigation }) {
                       sku_name={item?.sku_id}
                       product_code={item?.subcatalogue_no}
                       in_stock={item?.status}
+                      status={item?.status_name}
+                      addData={item}
                       navigation={navigation}
                       updateData={() => getSubCatalogueList()}
                     />
@@ -846,6 +846,7 @@ export default function Catelogue({ navigation }) {
                       tierName={item?.name}
                       amountType={item?.amount_type}
                       value={item?.discount_price}
+                      status={item?.status}
                       navigation={navigation}
                       updateData={() => getTiers()}
                     />

@@ -22,7 +22,7 @@ import moment from "moment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { useForm, Controller } from "react-hook-form";
-
+import MyorderScreen from "./MyOrders";
 import GlobalStyles from "../../../assets/css/styles";
 import CrossMark from "../../../assets/images/icons/CrossMark";
 import AllOrdersCard from "./AllOrdersCard";
@@ -58,23 +58,24 @@ const DetailedOrderPage = ({ route, navigation }) => {
     productInfo,
     invoice,
     image,
-    warehouseid
+    warehouseid,
+    pdf,
   } = route.params;
-  const[data1,setData11]=useState(route.params)
+  const [data1, setData11] = useState(route.params);
+  console.log(invoice, "963");
   const {
     control,
     handleSubmit: handleSubmit1,
     formState: formState1,
   } = useForm();
   const [orders, setorders] = useState([]);
-  const [Data1, setData1] = useState([])
-  const [warehouse, setWarehouse] = useState("");
+  const [Data1, setData1] = useState([]);
+  const [warehouse, setWarehouse] = useState("Select");
   const [notes, setNotes] = React.useState(" ");
   const [acceptError, setAcceptError] = React.useState(" ");
   const [declineError, setDeclineError] = React.useState(" ");
 
-  
-const[warehouseData,setWarehouseData] = useState([])
+  const [warehouseData, setWarehouseData] = useState([]);
   const [warehouseKey, setWarehouseKey] = useState("Select");
   const date = moment(orderDateTime).format("DD MMMM YYYY");
   const [updatedProductInfo, setUpdatedProductInfo] = useState(productInfo);
@@ -84,37 +85,29 @@ const[warehouseData,setWarehouseData] = useState([])
   const refRBSheet2 = useRef();
   const refRBSheet3 = useRef();
 
-  const totalPrice = updatedProductInfo[updatedProductInfo.length - 1].qty * updatedProductInfo[updatedProductInfo.length - 1].price_per_unit;
-  
-  const taxRate = 5; // percentage tax rate
-const taxAmount = (totalPrice * taxRate) / 100;
-const totalPriceWithTax = totalPrice + taxAmount;
-
   // notes
-  const [text, onChangeNotes] = React.useState('');
+  const [text, onChangeNotes] = React.useState("");
 
   const getWarehouse = async () => {
     const jsonValue = await AsyncStorage.getItem("UserToken");
     const id = await AsyncStorage.getItem("userTypeId");
     let token = jsonValue;
     var myJson = {
-      
-        start: 0,
-        end: 10,
-        page: 1,
-        sort_method: "",
-        keyword: "",
-        sort_by: "",
-        supplier_id: id,
-        status: null
-      
+      start: 0,
+      end: 10,
+      page: 1,
+      sort_method: "",
+      keyword: "",
+      sort_by: "",
+      supplier_id: id,
+      status: null,
     };
     const result = await api.getWarehouse(
       token,
       endPoint.get_Warehouse,
       myJson
     );
-   
+
     if (result) {
       setWarehouseData(result.data);
     } else {
@@ -122,9 +115,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
     }
   };
   // select warehouse
-  const data = [
-    { key: 1, label: "W1" },
-  ];
+  const data = [{ key: 1, label: "W1" }];
 
   const ItemSepartorView = () => {
     return <View style={{ height: 10, width: "100%" }} />;
@@ -140,9 +131,26 @@ const totalPriceWithTax = totalPrice + taxAmount;
     return newData;
   });
 
+  // const openResume = (invoice) => {
+  //   if (invoice) {
+  //     const file_url = invoice;
+  //     Linking.canOpenURL(file_url).then(async (supported) => {
+  //       if (supported) {
+  //         Linking.openURL(file_url);
+  //       } else {
+  //         await WebBrowser.openBrowserAsync(file_url);
+  //       }
+  //     });
+  //   }
+  // };
+
   const openResume = (invoice) => {
+    // alert(pdf);
+
     if (invoice) {
-      const file_url = invoice;
+      alert();
+      console.log(pdf, "999");
+      const file_url = pdf;
       Linking.canOpenURL(file_url).then(async (supported) => {
         if (supported) {
           Linking.openURL(file_url);
@@ -152,6 +160,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
       });
     }
   };
+
   // const requestStoragePermission = async () => {
   //   console.log("7777777777777777788888888888899999999999");
   //   try {
@@ -209,7 +218,6 @@ const totalPriceWithTax = totalPrice + taxAmount;
   }, [500]);
 
   const onAccept = async () => {
-
     const jsonValue = await AsyncStorage.getItem("UserToken");
 
     let token = jsonValue;
@@ -217,23 +225,25 @@ const totalPriceWithTax = totalPrice + taxAmount;
       order_id: id,
       status: 30,
       notes: text,
-       warehouse_id: warehouseKey
+      warehouse_id: warehouseKey,
     };
-    console.log(myJson,"ACCEPT DATA")
-    const result = await api.changeStatus(token, endPoint.status_change, myJson);
-    console.log(result,"DECLINE RESULT")
+    console.log(myJson, "ACCEPT DATA");
+    const result = await api.changeStatus(
+      token,
+      endPoint.status_change,
+      myJson
+    );
+    console.log(result, "DECLINE RESULT");
     if (result.success === "1") {
-      setData1(result.data)
-      refRBSheet2.current.open(); 
-     
+      setData1(result.data);
+      refRBSheet2.current.open();
     } else {
-      setAcceptError(result.message)
-      refRBSheet3.current.open(); 
-     setData1([])
+      setAcceptError(result.message);
+      refRBSheet3.current.open();
+      setData1([]);
     }
   };
   const onDecline = async () => {
-
     const jsonValue = await AsyncStorage.getItem("UserToken");
 
     let token = jsonValue;
@@ -242,22 +252,26 @@ const totalPriceWithTax = totalPrice + taxAmount;
       status: 40,
       notes: notes,
     };
-    const result = await api.changeStatus(token, endPoint.status_change, myJson);
-    console.log(result,"ACCept RESULT")
+    const result = await api.changeStatus(
+      token,
+      endPoint.status_change,
+      myJson
+    );
+    console.log(result, "ACCept RESULT");
 
-    if (result.success === "1" ) {
-      setData1(result.data)
-      
-      refRBSheet2.current.open(); 
+    if (result.success === "1") {
+      setData1(result.data);
+
+      refRBSheet2.current.open();
     } else {
-      setDeclineError(result.message)
-      setData1([])
-      refRBSheet3.current.open(); 
+      setDeclineError(result.message);
+      setData1([]);
+      refRBSheet3.current.open();
     }
   };
   const Incrementqty = (qty, id) => {
     // Update the array
-    const newProductInfo = updatedProductInfo.map(item => {
+    const newProductInfo = updatedProductInfo.map((item) => {
       if (item.id === id) {
         return { ...item, qty: qty };
       }
@@ -268,14 +282,11 @@ const totalPriceWithTax = totalPrice + taxAmount;
     setUpdatedProductInfo(newProductInfo);
   };
 
-
- 
   //orders/supplier-list
   const getOrdersSupplierlist = async () => {
     const jsonValue = await AsyncStorage.getItem("UserToken");
 
-    let token =jsonValue;
-     
+    let token = jsonValue;
 
     const result = await api.getorders(token, endPoint.get_orders);
 
@@ -286,18 +297,26 @@ const totalPriceWithTax = totalPrice + taxAmount;
     }
   };
 
+  // Add the other price from cost_price_per_unit
+  const totalPrice = updatedProductInfo.reduce(
+    (total, item) => total + item.cost_price_per_unit * item.qty,
+    0
+  );
+  // const totalPrice = updatedProductInfo[updatedProductInfo.length - 1].qty * updatedProductInfo[updatedProductInfo.length - 1].price_per_unit;
+  // console.log(totalPrice,'totalPrice')
+  const taxRate = 5; // percentage tax rate
+  const taxAmount = (totalPrice * taxRate) / 100;
+  const totalPriceWithTax = totalPrice + taxAmount;
+
   return (
-    
     <ScrollView>
-      
       <SafeAreaView style={GlobalStyles.orderContainer}>
         {/* <StatusBar animated={true} backgroundColor='#1F9CEF' /> */}
         <View style={GlobalStyles.headerDetailOrderView}>
           <Pressable
             onPress={() => {
               navigation.navigate("Orders");
-            }}
-          >
+            }}>
             <CrossMark />
           </Pressable>
 
@@ -306,8 +325,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
               style={[
                 GlobalStyles.orderDetailPaidStatus,
                 GlobalStyles.orderDetailPaidStatusColor,
-              ]}
-            >
+              ]}>
               <Text style={GlobalStyles.paidTextOrderDetail}>UnPaid</Text>
             </View>
           ) : (
@@ -330,15 +348,13 @@ const totalPriceWithTax = totalPrice + taxAmount;
             style={[
               GlobalStyles.positionalAbsoluteCard,
               GlobalStyles.orderDetailCardOneHeight,
-            ]}
-          >
+            ]}>
             <View style={GlobalStyles.positionalAbsoluteCardView}>
               <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
-                }}
-              >
+                }}>
                 <View style={{ marginTop: 22 }}>
                   <Text style={GlobalStyles.orderDetailPositionText}>
                     Items
@@ -347,24 +363,21 @@ const totalPriceWithTax = totalPrice + taxAmount;
                     style={[
                       GlobalStyles.orderDetailCardHeading,
                       GlobalStyles.paddingFour,
-                    ]}
-                  >
+                    ]}>
                     {items}
                   </Text>
                   <Text
                     style={[
                       GlobalStyles.orderDetailPositionText,
                       GlobalStyles.marginTopFive,
-                    ]}
-                  >
+                    ]}>
                     Email Status
                   </Text>
                   <Text
                     style={[
                       GlobalStyles.orderDetailCardHeading,
                       GlobalStyles.paddingFour,
-                    ]}
-                  >
+                    ]}>
                     {emailStatus}
                   </Text>
                 </View>
@@ -379,8 +392,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
                     style={[
                       GlobalStyles.orderDetailPositionText,
                       GlobalStyles.colorBlue,
-                    ]}
-                  >
+                    ]}>
                     Ordered On {date}
                   </Text>
                 </View>
@@ -403,49 +415,49 @@ const totalPriceWithTax = totalPrice + taxAmount;
               />
             )}
           /> */}
-          {moneyStatus ===  10 ? (
-          <FlatList
-          data={productInfo}
-          keyExtractor={(item) => item.id}
-          ItemSeparatorComponent={ItemSepartorView}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <OrderDetailCard
-              title={item?.product_name}
-              costPriceperUnit={item?.cost_price_per_unit}
-              displayskuName={item?.display_sku_name}
-              image={item?.product_image}
-              status={data1?.moneyStatus}
-              incrementqty={(text) => Incrementqty(text,item.id)}
+          {moneyStatus === 10 ? (
+            <FlatList
+              data={productInfo}
+              keyExtractor={(item) => item.id}
+              ItemSeparatorComponent={ItemSepartorView}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <OrderDetailCard
+                  title={item?.product_name}
+                  costPriceperUnit={item?.cost_price_per_unit}
+                  displayskuName={item?.display_sku_name}
+                  image={item?.product_image}
+                  status={data1?.moneyStatus}
+                  quantity={item?.qty}
+                  incrementqty={(text) => Incrementqty(text, item.id)}
+                />
+              )}
             />
-          )}
-        /> 
           ) : (
             <FlatList
-          data={productInfo}
-          keyExtractor={(item) => item.id}
-          ItemSeparatorComponent={ItemSepartorView}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <OrderDetailCard
-              title={item?.product_name}
-              costPriceperUnit={item?.cost_price_per_unit}
-              displayskuName={item?.display_sku_name}
-              status={data1?.moneyStatus}
-              image={item?.product_image}
+              data={productInfo}
+              keyExtractor={(item) => item.id}
+              ItemSeparatorComponent={ItemSepartorView}
+              showsVerticalScrollIndicator={false}
+              renderItem={({ item }) => (
+                <OrderDetailCard
+                  title={item?.product_name}
+                  costPriceperUnit={item?.cost_price_per_unit}
+                  displayskuName={item?.display_sku_name}
+                  status={data1?.moneyStatus}
+                  image={item?.product_image}
+                />
+              )}
             />
           )}
-        /> 
-          )}
-            
+
           {/* <OrderDetailCard /> */}
 
           <View
             style={[
               GlobalStyles.orderDetailCardGlobalView,
               GlobalStyles.marginTopFive,
-            ]}
-          >
+            ]}>
             <View style={GlobalStyles.cardThreeView}>
               <Text style={GlobalStyles.orderDetailCardHeading}>
                 Billing Address
@@ -454,8 +466,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
                 style={[
                   GlobalStyles.orderDetailCardText,
                   GlobalStyles.marginTopSeven,
-                ]}
-              >
+                ]}>
                 {billingAddress}
               </Text>
             </View>
@@ -464,8 +475,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
             style={[
               GlobalStyles.orderDetailCardGlobalView,
               GlobalStyles.marginTopFive,
-            ]}
-          >
+            ]}>
             <View style={[GlobalStyles.cardThreeView]}>
               <View style={GlobalStyles.bottomLineOrderCared1}>
                 <View style={GlobalStyles.justifyContentCenter}>
@@ -493,8 +503,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
             style={[
               GlobalStyles.orderDetailCardGlobalView,
               GlobalStyles.marginTopFive,
-            ]}
-          >
+            ]}>
             <View style={[GlobalStyles.cardThreeView]}>
               <View style={GlobalStyles.bottomLineOrderCared1}>
                 <View style={GlobalStyles.justifyContentCenter}>
@@ -512,7 +521,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
                 </View> */}
               </View>
               <View style={GlobalStyles.marginTopSeven}>
-                <Text style={GlobalStyles.orderDetailCardText}>{ }</Text>
+                <Text style={GlobalStyles.orderDetailCardText}>{}</Text>
               </View>
             </View>
           </View>
@@ -520,8 +529,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
             style={[
               GlobalStyles.orderDetailCardGlobalView,
               GlobalStyles.marginTopFive,
-            ]}
-          >
+            ]}>
             <View style={[GlobalStyles.cardThreeView]}>
               <View style={GlobalStyles.bottomLineOrderCared1}>
                 <View style={GlobalStyles.justifyContentCenter}>
@@ -533,9 +541,9 @@ const totalPriceWithTax = totalPrice + taxAmount;
                     </View>
                     <View style={GlobalStyles.requiredIconPadding}>
                       <Ionicons
-                        name="information-circle-outline"
+                        name='information-circle-outline'
                         size={14}
-                        color="red"
+                        color='red'
                       />
                     </View>
                   </View>
@@ -556,14 +564,12 @@ const totalPriceWithTax = totalPrice + taxAmount;
               </View>
             </View>
           </View>
-          {updatedProductInfo.map(item => (
+          {/* {updatedProductInfo.map((item) => ( */}
           <View
             style={[
               GlobalStyles.orderDetailCardGlobalView,
               GlobalStyles.marginTopFive,
-            ]}
-          >
-
+            ]}>
             <View style={[GlobalStyles.cardThreeView]}>
               <View style={GlobalStyles.bottomLineOrderCared1}>
                 <View style={GlobalStyles.justifyContentCenter}>
@@ -577,7 +583,6 @@ const totalPriceWithTax = totalPrice + taxAmount;
                 </View>
                 <View style={GlobalStyles.justifyContentCenter}>
                   <Text style={GlobalStyles.orderDetailCardText}>
-
                     AED {totalPrice}
                   </Text>
                 </View>
@@ -586,8 +591,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
                 style={[
                   GlobalStyles.bottomLineOrderCared1,
                   GlobalStyles.paddingThree,
-                ]}
-              >
+                ]}>
                 <View style={GlobalStyles.justifyContentCenter}>
                   <View style={GlobalStyles.orderDetailcardView}>
                     <View>
@@ -607,8 +611,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
                 style={[
                   GlobalStyles.bottomLineOrderCared1,
                   GlobalStyles.paddingThree,
-                ]}
-              >
+                ]}>
                 <View style={GlobalStyles.justifyContentCenter}>
                   <View style={GlobalStyles.orderDetailcardView}>
                     <View>
@@ -628,8 +631,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
                 style={[
                   GlobalStyles.bottomLineOrderCared1,
                   GlobalStyles.marginTopSeven,
-                ]}
-              >
+                ]}>
                 <View style={GlobalStyles.justifyContentCenter}>
                   <View style={GlobalStyles.orderDetailcardView}>
                     <View>
@@ -637,8 +639,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
                         style={[
                           GlobalStyles.orderDetailCardHeading,
                           GlobalStyles.colorRed,
-                        ]}
-                      >
+                        ]}>
                         Estimated total
                       </Text>
                     </View>
@@ -649,8 +650,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
                     style={[
                       GlobalStyles.orderDetailCardHeading,
                       GlobalStyles.colorRed,
-                    ]}
-                  >
+                    ]}>
                     AED {totalPriceWithTax}
                   </Text>
                 </View>
@@ -662,8 +662,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
                 style={[
                   GlobalStyles.bottomLineOrderCared1,
                   GlobalStyles.marginTopSeven,
-                ]}
-              >
+                ]}>
                 <View style={GlobalStyles.justifyContentCenter}>
                   <View style={GlobalStyles.orderDetailcardView}>
                     <View>
@@ -671,8 +670,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
                         style={[
                           GlobalStyles.orderDetailCardHeading,
                           GlobalStyles.colorRed,
-                        ]}
-                      >
+                        ]}>
                         Payment Status
                       </Text>
                     </View>
@@ -684,8 +682,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
                       style={[
                         GlobalStyles.orderDetailCardHeading,
                         GlobalStyles.colorRed,
-                      ]}
-                    >
+                      ]}>
                       UnPaid
                     </Text>
                   ) : (
@@ -693,8 +690,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
                       style={[
                         GlobalStyles.orderDetailCardHeading,
                         GlobalStyles.colorRed,
-                      ]}
-                    >
+                      ]}>
                       Paid
                     </Text>
                   )}
@@ -702,29 +698,20 @@ const totalPriceWithTax = totalPrice + taxAmount;
               </View>
             </View>
           </View>
-          ))}
-          {status === 0 ||
-            status === 30 ||
-            status === 70 ||
-            status === 80 ||
-            status === 32 ||
-            status === 60 ? (
-            <Pressable
-             
-             onPress={() => openResume(invoice)}
-            >
-              <View
-                style={[
-                  GlobalStyles.marginTopSix,
-                  GlobalStyles.onPressMarkReceived,
-                ]}
-              >
-                <Text style={GlobalStyles.onPressedOrderText}>
-                  Download Invoice
-                </Text>
-              </View>
-            </Pressable>
-          ) : null}
+          {/* ))} */}
+
+          <Pressable onPress={(invoice) => openResume(invoice)}>
+            <View
+              style={[
+                GlobalStyles.marginTopSix,
+                GlobalStyles.onPressMarkReceived,
+              ]}>
+              <Text style={GlobalStyles.onPressedOrderText}>
+                Download Invoice
+              </Text>
+            </View>
+          </Pressable>
+
           {/* {emailStatus === "Pending for acceptance" ? (
             <View>
               <View
@@ -770,22 +757,42 @@ const totalPriceWithTax = totalPrice + taxAmount;
             //     </View>
             //   </TouchableOpacity>
             // </View>
-            <View style={[styles.flexRow, styles.justifyCenter, styles.space_btn]}>
-            <View style={[styles.width50, styles.PadR9]}>
-               <TouchableOpacity style={[styles.continueBtn, styles.flexRow, styles.justifyCenter, styles.cancelStyle]} onPress={() => {
-                 refRBSheet.current.open();
-               }}>
-                <Text style={[styles.font16, styles.textPri, styles.letspa35]}>Accept</Text>
-              </TouchableOpacity>
-            </View>
+            <View
+              style={[styles.flexRow, styles.justifyCenter, styles.space_btn]}>
+              <View style={[styles.width50, styles.PadR9]}>
+                <TouchableOpacity
+                  style={[
+                    styles.continueBtn,
+                    styles.flexRow,
+                    styles.justifyCenter,
+                    styles.cancelStyle,
+                  ]}
+                  onPress={() => {
+                    refRBSheet.current.open();
+                  }}>
+                  <Text
+                    style={[styles.font16, styles.textPri, styles.letspa35]}>
+                    Accept
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-            <View style={[styles.width50, styles.PadL9]}>
-              <TouchableOpacity style={[styles.continueBtn, styles.flexRow, styles.justifyCenter]} onPress={() => {
-                 refRBSheet1.current.open();
-               }}>
-                <Text style={[styles.font16, styles.textWhite, styles.letspa35]} >Decline</Text>
-              </TouchableOpacity>
-            </View>
+              <View style={[styles.width50, styles.PadL9]}>
+                <TouchableOpacity
+                  style={[
+                    styles.continueBtn,
+                    styles.flexRow,
+                    styles.justifyCenter,
+                  ]}
+                  onPress={() => {
+                    refRBSheet1.current.open();
+                  }}>
+                  <Text
+                    style={[styles.font16, styles.textWhite, styles.letspa35]}>
+                    Decline
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           ) : null}
 
@@ -795,24 +802,19 @@ const totalPriceWithTax = totalPrice + taxAmount;
                 style={[
                   GlobalStyles.marginTopSix,
                   GlobalStyles.onPressMarkReceived,
-                ]}
-              >
-                <Pressable onPress={() => { }}>
+                ]}>
+                <Pressable onPress={() => {}}>
                   <Text style={GlobalStyles.onPressedOrderText}>
                     Mark As Reaceived
                   </Text>
                 </Pressable>
               </View>
-              <Pressable
-               
-               onPress={() => openResume(invoice)}
-              >
+              <Pressable onPress={(invoice) => openResume(invoice)}>
                 <View
                   style={[
                     GlobalStyles.marginTopSix,
                     GlobalStyles.onPressMarkReceived,
-                  ]}
-                >
+                  ]}>
                   <Text style={GlobalStyles.onPressedOrderText}>
                     Download Invoice
                   </Text>
@@ -826,15 +828,13 @@ const totalPriceWithTax = totalPrice + taxAmount;
                 style={{
                   flexDirection: "row",
                   justifyContent: "space-between",
-                }}
-              >
+                }}>
                 <View
                   style={[
                     GlobalStyles.marginTopSix,
                     GlobalStyles.onPressReceived,
-                  ]}
-                >
-                  <Pressable onPress={() => { }}>
+                  ]}>
+                  <Pressable onPress={() => {}}>
                     <Text style={GlobalStyles.onPressedOrderText}>
                       Order Returned
                     </Text>
@@ -844,26 +844,20 @@ const totalPriceWithTax = totalPrice + taxAmount;
                   style={[
                     GlobalStyles.marginTopSix,
                     GlobalStyles.onPressReceived,
-                  ]}
-                >
-                  <Pressable onPress={() => { }}>
+                  ]}>
+                  <Pressable onPress={() => {}}>
                     <Text style={GlobalStyles.onPressedOrderText}>
                       Mark as Complated
                     </Text>
                   </Pressable>
                 </View>
               </View>
-              <Pressable
-
-               onPress={() => openResume(invoice)}
-
-              >
+              <Pressable onPress={(invoice) => openResume(invoice)}>
                 <View
                   style={[
                     GlobalStyles.marginTopSix,
                     GlobalStyles.onPressMarkReceived,
-                  ]}
-                >
+                  ]}>
                   <Text style={GlobalStyles.onPressedOrderText}>
                     Download Invoice
                   </Text>
@@ -909,9 +903,17 @@ const totalPriceWithTax = totalPrice + taxAmount;
               borderTopRightRadius: 24,
               paddingTop: 9,
               paddingHorizontal: 30,
-            }
+            },
           }}>
-          <Text style={[styles.font22, styles.textBlack, styles.mb11, styles.fontBold]}>Accept Notes</Text>
+          <Text
+            style={[
+              styles.font22,
+              styles.textBlack,
+              styles.mb11,
+              styles.fontBold,
+            ]}>
+            Accept Notes
+          </Text>
 
           {/* Notes Input */}
           <View style={[styles.mb20, styles.width100]}>
@@ -930,7 +932,6 @@ const totalPriceWithTax = totalPrice + taxAmount;
               placeholderTextColor='#222B2E'
               onChangeText={onChangeNotes}
               value={text}
-            
             />
           </View>
           {/* Notes Input - Ends */}
@@ -951,7 +952,7 @@ const totalPriceWithTax = totalPrice + taxAmount;
               <DropDownIcon style={[styles.modalDropDown]} />
               <ModalSelector
                 data={warehouseDataArray}
-                initValue={warehouseKey}
+                initValue={warehouse}
                 selectStyle={[
                   styles.inputStyle,
                   styles.flexRow,
@@ -977,10 +978,10 @@ const totalPriceWithTax = totalPrice + taxAmount;
                   if (option.key) {
                     setWarehouse(option.label);
                     setWarehouseKey(option.value);
-                   
+                    // props.field.onChange(option.value)
                   }
                 }}
-                value={warehouseKey}
+                value={warehouse}
                 // onChange={(value) => {
                 //   setWarehouseKey(value.key);
                 // }}
@@ -988,19 +989,38 @@ const totalPriceWithTax = totalPrice + taxAmount;
             </View>
           </View>
           {/*  Select Warehouse Input - Ends */}
-          <View style={[styles.flexRow, styles.justifyCenter, styles.space_btn]}>
+          <View
+            style={[styles.flexRow, styles.justifyCenter, styles.space_btn]}>
             <View style={[styles.width50, styles.PadR9]}>
-               <TouchableOpacity style={[styles.continueBtn, styles.flexRow, styles.justifyCenter, styles.cancelStyle]} onPress={() => refRBSheet.current.close()}>
-                <Text style={[styles.font16, styles.textPri, styles.letspa35]}>Cancel</Text>
+              <TouchableOpacity
+                style={[
+                  styles.continueBtn,
+                  styles.flexRow,
+                  styles.justifyCenter,
+                  styles.cancelStyle,
+                ]}
+                onPress={() => refRBSheet.current.close()}>
+                <Text style={[styles.font16, styles.textPri, styles.letspa35]}>
+                  Cancel
+                </Text>
               </TouchableOpacity>
             </View>
 
             <View style={[styles.width50, styles.PadL9]}>
-              <TouchableOpacity style={[styles.continueBtn, styles.flexRow, styles.justifyCenter]} onPress={() =>onAccept()}>
-                <Text style={[styles.font16, styles.textWhite, styles.letspa35]} >Submit</Text>
+              <TouchableOpacity
+                style={[
+                  styles.continueBtn,
+                  styles.flexRow,
+                  styles.justifyCenter,
+                ]}
+                onPress={() => onAccept()}>
+                <Text
+                  style={[styles.font16, styles.textWhite, styles.letspa35]}>
+                  Submit
+                </Text>
               </TouchableOpacity>
             </View>
-            </View>
+          </View>
         </RBSheet>
         <RBSheet
           ref={refRBSheet1}
@@ -1017,58 +1037,83 @@ const totalPriceWithTax = totalPrice + taxAmount;
               borderTopRightRadius: 24,
               paddingTop: 9,
               paddingHorizontal: 30,
-            }
+            },
           }}>
-            <Text style={[styles.font22, styles.textBlack, styles.textCenter, styles.mb11, styles.fontBold]}>Decline Notes</Text>
- {/* Notes Input */}
- <View style={[styles.mb20, styles.width100]}>
-                  <Text
-                    style={[
-                      styles.labelText,
-                      styles.font12,
-                      styles.fontMed,
-                      styles.mb4,
-                    ]}>
-                    {" "}
-                     Notes
-                    <Text style={[styles.font12, styles.textPri1]}>*</Text>
-                  </Text>
+          <Text
+            style={[
+              styles.font22,
+              styles.textBlack,
+              styles.textCenter,
+              styles.mb11,
+              styles.fontBold,
+            ]}>
+            Decline Notes
+          </Text>
+          {/* Notes Input */}
+          <View style={[styles.mb20, styles.width100]}>
+            <Text
+              style={[
+                styles.labelText,
+                styles.font12,
+                styles.fontMed,
+                styles.mb4,
+              ]}>
+              {" "}
+              Notes
+              <Text style={[styles.font12, styles.textPri1]}>*</Text>
+            </Text>
 
-                  <Controller
-                    name='notes'
-                    control={control}
-                    rules={{ required: "Product name is required." }}
-                    render={(props) => (
-                      <TextInput
-                        style={[styles.inputStyle]}
-                        onChangeText={(notes) => {
-                          props.field.onChange(notes);
-                          setNotes(notes);
-                        }}
-                        value={notes}
-                      />
-                    )}
-                  />
-                  {formState1.errors.notes && (
-                    <Text style={[styles.errorMsg]}>
-                      Notes required.
-                    </Text>
-                  )}
-                 
-                </View>
-                <View style={[styles.flexRow, styles.justifyCenter, styles.space_btn]}>
+            <Controller
+              name='notes'
+              control={control}
+              rules={{ required: "Product name is required." }}
+              render={(props) => (
+                <TextInput
+                  style={[styles.inputStyle]}
+                  onChangeText={(notes) => {
+                    props.field.onChange(notes);
+                    setNotes(notes);
+                  }}
+                  value={notes}
+                />
+              )}
+            />
+            {formState1.errors.notes && (
+              <Text style={[styles.errorMsg]}>Notes required.</Text>
+            )}
+          </View>
+          <View
+            style={[styles.flexRow, styles.justifyCenter, styles.space_btn]}>
             <View style={[styles.width50, styles.PadR9]}>
-               <TouchableOpacity style={[styles.continueBtn, styles.flexRow, styles.justifyCenter, styles.cancelStyle]} onPress={() => refRBSheet1.current.close()}>
-                <Text style={[styles.font16, styles.textPri, styles.letspa35]}>Cancel</Text>
+              <TouchableOpacity
+                style={[
+                  styles.continueBtn,
+                  styles.flexRow,
+                  styles.justifyCenter,
+                  styles.cancelStyle,
+                ]}
+                onPress={() => refRBSheet1.current.close()}>
+                <Text style={[styles.font16, styles.textPri, styles.letspa35]}>
+                  Cancel
+                </Text>
               </TouchableOpacity>
             </View>
 
             <View style={[styles.width50, styles.PadL9]}>
-              <TouchableOpacity style={[styles.continueBtn, styles.flexRow, styles.justifyCenter]} onPress={handleSubmit1(onDecline)}>
-                <Text style={[styles.font16, styles.textWhite, styles.letspa35]} >Submit</Text>
+              <TouchableOpacity
+                style={[
+                  styles.continueBtn,
+                  styles.flexRow,
+                  styles.justifyCenter,
+                ]}
+                onPress={handleSubmit1(onDecline)}>
+                <Text
+                  style={[styles.font16, styles.textWhite, styles.letspa35]}>
+                  Submit
+                </Text>
               </TouchableOpacity>
             </View>
-            </View>
+          </View>
           {/* Notes Input - Ends */}
         </RBSheet>
         <RBSheet
@@ -1086,29 +1131,59 @@ const totalPriceWithTax = totalPrice + taxAmount;
               borderTopRightRadius: 24,
               paddingTop: 9,
               paddingHorizontal: 30,
-            }
+            },
           }}>
-          
-         
-
-
           {/* success Popup */}
-          <View style={[styles.flexColumn, styles.alignCenter, styles.justifyCenter, styles.padt30]}>
-              <Image source={require('../../../assets/images/dashboard/success_img.png')} style={[styles.successIcon]}></Image>
-              <Text style={[styles.font22, styles.textBlack, styles.textCenter, styles.mb11, styles.fontBold]}>Updated Successfuly</Text>
-              <Text style={[styles.font15, styles.textBlack, styles.mb37, styles.textCenter]}>Order status successfully</Text>
-              <View style={[styles.flexRow, styles.justifyCenter]}>
-                <TouchableOpacity style={[styles.continueBtn, styles.width50, styles.flexRow, styles.justifyCenter]} onPress={()=>navigation.goBack()}>
-                  <Text style={[styles.font16, styles.textWhite, styles.letspa35]} >Continue</Text>
-                </TouchableOpacity>
-              </View>
+          <View
+            style={[
+              styles.flexColumn,
+              styles.alignCenter,
+              styles.justifyCenter,
+              styles.padt30,
+            ]}>
+            <Image
+              source={require("../../../assets/images/dashboard/success_img.png")}
+              style={[styles.successIcon]}></Image>
+            <Text
+              style={[
+                styles.font22,
+                styles.textBlack,
+                styles.textCenter,
+                styles.mb11,
+                styles.fontBold,
+              ]}>
+              Updated Successfully
+            </Text>
+            <Text
+              style={[
+                styles.font15,
+                styles.textBlack,
+                styles.mb37,
+                styles.textCenter,
+              ]}>
+              Order status successfully
+            </Text>
+            <View style={[styles.flexRow, styles.justifyCenter]}>
+              <TouchableOpacity
+                style={[
+                  styles.continueBtn,
+                  styles.width50,
+                  styles.flexRow,
+                  styles.justifyCenter,
+                ]}
+                // onPress={() => navigation.navigate("MyorderScreen")}
+                onPress={() => [
+                  refRBSheet.current.close(),
+                  navigation.goBack(),
+                ]}>
+                <Text
+                  style={[styles.font16, styles.textWhite, styles.letspa35]}>
+                  Continue
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
           {/* success Popup Ends */}
-
-          
-
-
-         
         </RBSheet>
         <RBSheet
           ref={refRBSheet3}
@@ -1125,25 +1200,59 @@ const totalPriceWithTax = totalPrice + taxAmount;
               borderTopRightRadius: 24,
               paddingTop: 9,
               paddingHorizontal: 30,
-            }
+            },
           }}>
-            {/* error Popup */}
-          <View style={[styles.flexColumn, styles.alignCenter, styles.justifyCenter, styles.padt30]}>
-              <Image source={require('../../../assets/images/dashboard/errorImg.png')} style={[styles.successIcon]}></Image>
-              <Text style={[styles.font22, styles.textBlack, styles.textCenter, styles.mb11, styles.fontBold]}>Error</Text>
-              <Text style={[styles.font15, styles.textBlack, styles.mb37, styles.textCenter]}>  {acceptError ? acceptError : declineError}</Text>
-              <View style={[styles.flexRow, styles.justifyCenter]}>
-                <TouchableOpacity style={[styles.continueBtn, styles.width50, styles.flexRow, styles.justifyCenter]} onPress={()=>navigation.goBack()}>
-                  <Text style={[styles.font16, styles.textWhite, styles.letspa35]}>Go Back</Text>
-                </TouchableOpacity>
-              </View>
+          {/* error Popup */}
+          <View
+            style={[
+              styles.flexColumn,
+              styles.alignCenter,
+              styles.justifyCenter,
+              styles.padt30,
+            ]}>
+            <Image
+              source={require("../../../assets/images/dashboard/errorImg.png")}
+              style={[styles.successIcon]}></Image>
+            <Text
+              style={[
+                styles.font22,
+                styles.textBlack,
+                styles.textCenter,
+                styles.mb11,
+                styles.fontBold,
+              ]}>
+              Error
+            </Text>
+            <Text
+              style={[
+                styles.font15,
+                styles.textBlack,
+                styles.mb37,
+                styles.textCenter,
+              ]}>
+              {" "}
+              {acceptError ? acceptError : declineError}
+            </Text>
+            <View style={[styles.flexRow, styles.justifyCenter]}>
+              <TouchableOpacity
+                style={[
+                  styles.continueBtn,
+                  styles.width50,
+                  styles.flexRow,
+                  styles.justifyCenter,
+                ]}
+                onPress={() => navigation.navigate("MyorderScreen")}>
+                <Text
+                  style={[styles.font16, styles.textWhite, styles.letspa35]}>
+                  Go Back
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
           {/* error Popup Ends */}
-         
         </RBSheet>
       </SafeAreaView>
     </ScrollView>
-
   );
 };
 

@@ -257,7 +257,6 @@ const GlobalStyles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: COLORS.button,
     marginTop: 27,
-    marginBottom: 56,
     borderRadius: 6,
   },
   deliverySubmit: {
@@ -344,7 +343,7 @@ const GlobalStyles = StyleSheet.create({
   /*** dashboard css **/
   dahboardHeader: {
     backgroundColor: COLORS.button,
-    paddingTop: 1,
+    paddingTop: 40,
     paddingBottom: 20,
     paddingHorizontal: 20,
     borderBottomLeftRadius: 16,
@@ -464,7 +463,7 @@ const GlobalStyles = StyleSheet.create({
     backgroundColor: COLORS.overlayBG,
   },
   width300px: {
-    width: 300,
+    width: "100%",
   },
   marHorauto: {
     marginLeft: "auto",
@@ -476,13 +475,19 @@ const GlobalStyles = StyleSheet.create({
   modalDropDown: {
     position: "absolute",
     right: 9,
-    bottom: "30%",
+    bottom: 19,
+    zIndex: 2,
+  },
+  modalDropDownDefault: {
+    position: "absolute",
+    right: 9,
+    bottom: 10,
     zIndex: 2,
   },
   pressedmodalDropDown: {
     position: "absolute",
     right: 9,
-    bottom: "50%",
+    bottom: 10,
     zIndex: 2,
   },
   grayBg: {
@@ -740,7 +745,7 @@ const GlobalStyles = StyleSheet.create({
     borderRadius: 6,
   },
   saveButtonFooter: {
-    paddingHorizontal: 40,
+    paddingHorizontal: 19,
     paddingVertical: 13,
     shadowColor: COLORS.shadowColor,
     shadowOffset: { width: 0, height: -3 },
@@ -1060,7 +1065,7 @@ const GlobalStyles = StyleSheet.create({
 
   /*** supplier profile css **/
   profileHeader: {
-    paddingTop: 15,
+    paddingTop: 42,
     paddingHorizontal: 20,
     paddingBottom: 15,
   },
@@ -1228,10 +1233,10 @@ const GlobalStyles = StyleSheet.create({
   headerContainer: {
     backgroundColor: COLORS.button,
     width: "100%",
-    height: 127,
+    height: 147,
   },
   headerAligment: {
-    marginTop: 10,
+    marginTop: 41,
     marginLeft: 19,
     marginRight: 17,
   },
@@ -1325,7 +1330,7 @@ const GlobalStyles = StyleSheet.create({
   promotionsHeaderContainer: {
     backgroundColor: COLORS.button,
     width: "100%",
-    height: 61,
+    height: 81,
   },
   promotionsHeaderText: {
     paddingLeft: 20,
@@ -1335,7 +1340,7 @@ const GlobalStyles = StyleSheet.create({
   },
   PromotionScreenIconView: {
     flexDirection: "row",
-    paddingTop: 21,
+    paddingTop: 41,
     paddingLeft: 22,
     alignItems: "center",
   },
@@ -1608,7 +1613,7 @@ const GlobalStyles = StyleSheet.create({
     lineHeight: 20,
   },
   orderOutlet: {
-    color: COLORS.introText,
+    color: COLORS.theme,
     fontSize: 10,
     lineHeight: 12,
     marginTop: 3,
@@ -1624,6 +1629,7 @@ const GlobalStyles = StyleSheet.create({
     paddingTop: 14.5,
     paddingLeft: 14.5,
     paddingRight: 14.5,
+    paddingBottom: 14.5,
   },
   orderDetailCardOne: {
     height: 38,
@@ -1903,10 +1909,16 @@ const GlobalStyles = StyleSheet.create({
   addUserHeader: {
     backgroundColor: COLORS.white,
     width: "100%",
-    paddingTop: 20,
+    paddingTop: 42,
     paddingBottom: 20,
     paddingHorizontal: 18,
   },
+  forgetPasswordBackArrow: {
+    position: "absolute",
+    top: 42,
+    left: 22,
+  },
+
   //anil
   //after merge
   forgotParagraphStyle: {
@@ -1930,10 +1942,10 @@ const GlobalStyles = StyleSheet.create({
     marginBottom: 43,
   },
   defaultScreenContainerInvoice: {
-    marginTop: 26,
+    marginTop: 10,
     marginLeft: 19,
     marginRight: 19,
-    marginBottom: 43,
+    marginBottom: 20,
   },
   defaultScreenLabel: {
     fontSize: 13,
@@ -1993,11 +2005,11 @@ const GlobalStyles = StyleSheet.create({
   paymentHeaderView: {
     backgroundColor: COLORS.button,
     width: "100%",
-    height: 51,
+    height: 81,
   },
   paymentHeaderPaddingView: {
-    marginTop: 10,
-    marginLeft: 20,
+    marginTop: 41,
+    marginLeft: 19,
     marginRight: 17,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -2254,12 +2266,12 @@ const GlobalStyles = StyleSheet.create({
     backgroundColor: "#F2F7FC",
     padding: 16,
   },
-  defaultScreenLabel: {
-    color: "#5B6B65",
-    fontSize: 15,
-    fontFamily: FONTS.Regular,
-    paddingBottom: 5,
-  },
+  // defaultScreenLabel: {
+  //   color: "#5B6B65",
+  //   fontSize: 15,
+  //   fontFamily: FONTS.Regular,
+  //   paddingBottom: 5,
+  // },
   defaultScreenDropdownContainer: {
     borderColor: "#DCDCDC",
     borderWidth: 1,
@@ -2439,20 +2451,22 @@ const GlobalStyles = StyleSheet.create({
     marginLeft: 13,
   },
   notificationTextContainer: {
-    width: "83%",
+    width: Dimensions.get("window").width - 100,
     marginLeft: 13,
   },
   notificationTitle: {
     color: "#0F141A",
     fontSize: 13,
     fontFamily: FONTS.SemiBold,
+    fontWeight: "bold",
     marginTop: 13,
   },
   notificationText: {
     color: "#1F222F",
     fontSize: 13,
     fontFamily: FONTS.Regular,
-    marginTop: 5,
+    marginTop: 2,
+    marginBottom: 5,
   },
   notificationDate: {
     color: "#617191",
@@ -2461,7 +2475,6 @@ const GlobalStyles = StyleSheet.create({
     textAlign: "right",
     paddingRight: 10,
     paddingBottom: 10,
-    marginTop: -10,
   },
   notificationBell: {
     textAlign: "right",
@@ -3007,6 +3020,17 @@ const GlobalStyles = StyleSheet.create({
     marginBottom: 4,
     paddingLeft: 0,
   },
+  textInpMobileAddUser: {
+    display: "flex",
+    flexDirection: "row",
+    width: "100%",
+    height: 46,
+    backgroundColor: "white",
+    borderColor: "#DCDCDC",
+    borderWidth: 1,
+    marginBottom: 4,
+    paddingLeft: 10,
+  },
   // ---------------- Css 18/04/2023 Ends ---------------------------
 
   // Delete Popup
@@ -3014,6 +3038,116 @@ const GlobalStyles = StyleSheet.create({
     paddingRight: 9,
   },
   // Delete Popup Ends,
+
+  // forgot password
+  m0: {
+    margin: 0,
+  },
+  // forgot password Ends
+
+  // input border red
+  borderRed: {
+    borderColor: "#EE3E54",
+  },
+  // input border red Ends
+
+  height39: {
+    height: 39,
+  },
+  marginTopDrawerscreen: {
+    marginTop: 120,
+  },
+  emailText1: {
+    color: COLORS.red,
+    fontSize: 10,
+    lineHeight: 12,
+  },
+  emailText2: {
+    color: COLORS.black,
+    fontSize: 10,
+    lineHeight: 12,
+  },
+  addButton2: {
+    position: "absolute",
+    bottom: 28,
+    right: 18,
+    width: 14,
+    height: 14,
+    backgroundColor: COLORS.button,
+    alignItems: "center",
+    borderRadius: 20,
+    alignSelf: "center",
+    shadowColor: COLORS.shadowColor,
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowRadius: 6,
+    shadowOpacity: 1,
+  },
+  stictyText2: {
+    color: COLORS.white,
+    fontSize: 9,
+    alignItems: "center",
+    bottom: 0,
+  },
+  // css changes on 30/05/2023
+  addSkuCon: {
+    paddingHorizontal: 16,
+    paddingTop: 33,
+    paddingBottom: 33,
+    height: Dimensions.get('window').height - 120
+  },
+  skucheckbox: {
+    width: 13,
+    height: 13,
+    borderColor: '#9CB8AE',
+    borderWidth: 1,
+    borderRadius: 3,
+    position: 'relative'
+  },
+  skuCard: {
+    borderColor: '#DCDCDC',
+    borderWidth: 1,
+    backgroundColor: '#fff',
+    marginBottom: 20,
+    padding: 15,
+  },
+  skulft: {
+    width: 13,
+    marginTop: 2
+  },
+  checkTick: {
+    width: 3,
+    height: 7,
+    position: 'absolute',
+    zIndex: 1,
+    left: 4,
+    top: 1,
+    borderRightWidth: 1,
+    borderRightColor: COLORS.white,
+    borderBottomColor: COLORS.white,
+    borderBottomWidth: 1,
+    transform: [{ rotate: "45deg" }]
+  },
+  warehouseFlatListView: {
+    paddingLeft: 18,
+    paddingRight: 19,
+    paddingTop: 19,
+    width: "100%",
+    marginBottom: 130,
+  },
+  skurgt: {
+    width: Dimensions.get('window').width - 75,
+    paddingLeft: 12
+  },
+  // css changes on 30/05/2023
+
+  // css changes on 1/06/2023
+  heightAuto: {
+    height: 'auto'
+  }
+  // css changes on 1/06/2023 Ends
 });
 
 export default GlobalStyles;

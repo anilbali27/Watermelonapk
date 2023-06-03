@@ -104,6 +104,15 @@ const getFilter = async (token, api_url, data) => {
   });
   return response.data;
 };
+//Filter by order
+const getallbuyers = async (token, api_url, data) => {
+  const response = await api.post(api_url, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
 //getorders
 const getorders = async (token, api_url, data) => {
   console.log(token, api_url, data, "prajju");
@@ -412,7 +421,15 @@ const getWarehouse = async (token, api_url, data) => {
   });
   return response.data;
 };
-
+//getAllSKUS
+const getAllSKUS = async (token, api_url, data) => {
+  const response = await api.post(api_url, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
 //update subcatlogue
 const updateSubcatalogue = async (token, api_url, data) => {
   const response = await api.post(api_url, data, {
@@ -423,6 +440,60 @@ const updateSubcatalogue = async (token, api_url, data) => {
   return response.data;
 };
 
+// getaddbuyers
+const addbuyers = async (token, api_url, data) => {
+  const response = await api.post(api_url, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+//deleteSKUS
+const deleteSKUS = async (token, api_url, data) => {
+  const response = await api.post(api_url, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+//getType 
+const getType = async (token, api_url, data) => {
+  const response = await api.post(api_url, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+//Create invetory
+const createInventory = async (token, api_url, data) => {
+  const response = await api.post(api_url, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+//viewData
+const viewData = async (token, api_url, data) => {
+  const response = await api.post(api_url, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+//unassign buyers
+const unassignBuyers = async (token, api_url, data) => {
+  const response = await api.post(api_url, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
 export default {
   ForgotPassword,
   ChangePassword,
@@ -461,6 +532,14 @@ export default {
   getFilter,
   getInvoice,
   changeStatus,
-  getWarehouse
+  getWarehouse,
+  getallbuyers,
+  addbuyers,
+  getAllSKUS,
+  deleteSKUS,
+  getType,
+  createInventory,
+  viewData,
+  unassignBuyers
 
 };

@@ -23,7 +23,6 @@ const InvoiceDetailCard = (props) => {
 
   const images = props.image;
 
-  console.log(props, "ffffffffffffffff");
 
   return (
     <View

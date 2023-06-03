@@ -29,9 +29,9 @@ const PaymentCard = (props) => {
             </Text>
           </View>
 
-          <View style={GlobalStyles.orderPaidStatus}>
+          {/* <View style={GlobalStyles.orderPaidStatus}>
             <Text style={GlobalStyles.paidText}>Paid</Text>
-          </View>
+          </View> */}
         </View>
         <View style={[GlobalStyles.flexRow, GlobalStyles.justifyBetween]}>
           {/* <Text
@@ -39,7 +39,7 @@ const PaymentCard = (props) => {
             Type : {props.type}
           </Text> */}
 
-          <View style={{ width: "25%" }}>
+          <View style={{ width: "33.33%" }}>
             <Text
               style={[
                 GlobalStyles.subText,
@@ -53,7 +53,7 @@ const PaymentCard = (props) => {
             {/* <View style={GlobalStyles.verticalLine} /> */}
           </View>
 
-          <View style={{ width: "33%" }}>
+          <View style={{ width: "33.33%" }}>
             <Text
               style={[
                 GlobalStyles.subText,
@@ -61,13 +61,13 @@ const PaymentCard = (props) => {
                 GlobalStyles.pr8,
                 GlobalStyles.pl8,
               ]}>
-              Buyer : {props.buyer}
+              Buyer : {props.buyer || "NA"}
             </Text>
 
             {/* <View style={GlobalStyles.verticalLine} /> */}
           </View>
 
-          <View style={{ width: "32%" }}>
+          <View style={{ width: "33.33%" }}>
             <Text
               style={[
                 GlobalStyles.subText,

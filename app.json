@@ -1,34 +1,36 @@
 {
   "expo": {
-    "name": "watermelon",
-    "slug": "watermelon",
-    "version": "1.0.0",
+    "name": "Watermelon Supplier",
+    "slug": "Watermelon-Supplier",
+    "version": "1.0",
     "orientation": "portrait",
-    "icon": "./assets/images/watermelon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/signup/Applogo.png",
+    "backgroundColor": "#1F9CEF",
     "splash": {
-      "image": "./assets/images/watermelon_splash.png",
+      "image": "./assets/splash/SplashScreen11.png",
       "resizeMode": "contain",
       "backgroundColor": "#1F9CEF"
     },
+
+   
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.baryonsdev.watermelon"
+      "bundleIdentifier": "com.Watermelon.Supplier"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/watermelon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.baryonsdev.watermelon"
+      "package": "com.Watermelon.Supplier"
     },
     "web": {
       "favicon": "./assets/images/watermelon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "beef9560-ff27-4027-80b1-c7ca2f6aeea5"
+        "projectId": "00163daf-58e6-48dc-8b10-e40c215f83b9"
       }
     },
     "owner": "baryonsdev"

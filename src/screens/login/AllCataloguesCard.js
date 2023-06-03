@@ -23,11 +23,8 @@ import React, {
 } from "react-native";
 
 const AllCataloguesCard = (props) => {
-  // console.log("props.prodprodname::", props);
   // const date = moment(props.timing).format("MMM DD");
   // const in_stock = props.in_stock;
-  // console.log(props, "props");
-  console.log(props, "CATALOGUE PROP");
   const images = props.product_image;
   const refRBSheet = useRef();
   const refRBSheet2 = useRef();
@@ -53,13 +50,11 @@ const AllCataloguesCard = (props) => {
       id: [deleteId],
       status: 2,
     };
-    console.log("myJsonSubCatelogue", myJson);
     const result = await api.CreateMasterData(
       endPoint.delete_catelogue,
       token,
       myJson
     );
-    console.log(result.success === "1", "Delete Catelogue");
     props.updateData();
   };
 
@@ -97,7 +92,25 @@ const AllCataloguesCard = (props) => {
                       {props?.product_name}
                     </Text>
                   </View>
-                  <View>
+                
+                  <View style={GlobalStyles.flexRow}>
+                
+
+                    { props?.status === "Active" ? 
+                      <View style={{ paddingLeft: 4 }}>
+                      <Text style={GlobalStyles.emailText}>
+                        Active
+                      </Text>
+                    </View>
+                    :
+                    <View style={{ paddingLeft: 4 }}>
+                    <Text style={GlobalStyles.emailText1}>
+                      Inactive
+                    </Text>
+                  </View>
+
+                    }
+                
                     {/* {moneyStatus == 10 ? (
                     <View style={GlobalStyles.outletActiveView}>
                       <Text style={GlobalStyles.paidText}>No Stock</Text>
@@ -107,28 +120,28 @@ const AllCataloguesCard = (props) => {
                       <Text style={GlobalStyles.paidText}>In Stock</Text>
                     </View>
                   )} */}
-                    <View style={GlobalStyles.pricingTierInstockview}>
+                    {/* <View style={GlobalStyles.pricingTierInstockview}>
                       <Text style={GlobalStyles.pricingTierInstockText}>
                         In Stock
                       </Text>
-                    </View>
+                    </View> */}
                   </View>
                 </View>
                 <View style={GlobalStyles.catalogueCardFruitsText}>
                   <Text style={[GlobalStyles.subText]}>
-                    {props?.category_name}({props?.qty})
+                    {props?.category_name}({props?.umo})
                   </Text>
                 </View>
                 <View style={GlobalStyles.outletEmailView}>
                   <Text style={GlobalStyles.outletEmailText}>
-                    Product Code : {props?.product_code}
+                    Product Code : {props?.supplier_product_code}
                   </Text>
                 </View>
-                <View style={GlobalStyles.outletEmailView}>
+                {/* <View style={GlobalStyles.outletEmailView}>
                   <Text style={GlobalStyles.outletEmailText}>
                     Registration No : {props?.registrationNumber}
                   </Text>
-                </View>
+                </View> */}
                 <View style={GlobalStyles.outletEmailView}>
                   <Text style={GlobalStyles.outletEmailText}>
                     Sub Category : {props?.subcategory_name}
@@ -141,6 +154,7 @@ const AllCataloguesCard = (props) => {
                     justifyContent: "space-between",
                     paddingBottom: 20,
                   }}>
+                    {props?.marketPlace === 1 ?
                   <View style={GlobalStyles.outletEmailView}>
                     <View>
                       <AntDesign
@@ -155,7 +169,23 @@ const AllCataloguesCard = (props) => {
                       </Text>
                     </View>
                   </View>
-
+                  :
+                  // null
+                  <View style={GlobalStyles.outletEmailView}>
+                  {/* <View>
+                    <AntDesign
+                      name='checkcircle'
+                      size={11}
+                      color={COLORS.red}
+                    />
+                  </View> */}
+                  {/* <View style={{ paddingLeft: 4 }}>
+                    <Text style={GlobalStyles.emailText1}>
+                      Market Place Availability
+                    </Text>
+                  </View> */}
+                </View>
+}
                   <View style={GlobalStyles.flexRow}>
                     <TouchableOpacity onPress={() => Editcatelogue(props?.id)}>
                       <View style={{ marginRight: 20 }}>
